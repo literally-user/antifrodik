@@ -1,5 +1,5 @@
-from datetime import datetime
 from dataclasses import dataclass
+from datetime import datetime
 from enum import StrEnum
 from uuid import UUID
 
@@ -13,11 +13,13 @@ class Gender(StrEnum):
     MALE = "MALE"
     FEMALE = "FEMALE"
 
+
 class MaritalStatus(StrEnum):
     SINGLE = "SINGLE"
     MARRIED = "MARRIED"
     DIVORCED = "DIVORCED"
     WINDOWED = "WINDOWED"
+
 
 @dataclass(kw_only=True)
 class User:
@@ -35,6 +37,7 @@ class User:
 
     created_at: datetime
     updated_at: datetime
+
 
 @dataclass(kw_only=True)
 class UserCredentials:

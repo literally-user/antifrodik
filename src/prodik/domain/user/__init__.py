@@ -1,9 +1,9 @@
-from .model import Role, User, Gender, MaritalStatus, UserCredentials
+from .model import Gender, MaritalStatus, Role, User, UserCredentials
 
 __all__ = (
-    "Role",
-    "User",
     "Gender",
     "MaritalStatus",
+    "Role",
+    "User",
     "UserCredentials",
 )
