@@ -6,7 +6,7 @@ from prodik.application.common.repositories import (
     UserRepository,
 )
 from prodik.application.common.token_manager import TokenManager
-from prodik.application.errors import UserNotFoundError, WrongCredentialsError
+from prodik.application.errors import UserNotFoundError, WrongCredentialsError, UserDeactivatedError
 from prodik.domain.user import User
 from prodik.infrastructure.config import SecretConfig
 
@@ -48,6 +48,9 @@ class LoginUserInteractor:
             hashed_password, user_credentials.hashed_password
         ):
             raise WrongCredentialsError("Неверный email или пароль")
+
+        if not user.is_active:
+            raise UserDeactivatedError("Пользователь деактивирован")
 
         access_token = self.token_manager.encode(
             user.id, user.role, self.secret_config.expires_in_seconds

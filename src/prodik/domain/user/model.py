@@ -37,6 +37,9 @@ class User:
 
     created_at: datetime
     updated_at: datetime
+    
+    def deactivate(self) -> None:
+        self.is_active = False
 
     def can_manage_users(self) -> bool:
         return self.role == Role.ADMIN
