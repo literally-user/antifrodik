@@ -43,7 +43,7 @@ class IdentityProvider:
         except PyJWTError as exc:
             raise InvalidTokenFormatError("Невалидный формат токена") from exc
 
-        user = await self.user_repository.get_by_uuid(user_data.get("uuid"))
+        user = await self.user_repository.get_by_id(user_data.get("uuid"))
         if user is None:
             raise UserNotFoundError("Пользователь не найден")
 
