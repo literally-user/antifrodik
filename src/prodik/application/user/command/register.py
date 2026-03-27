@@ -1,41 +1,67 @@
 from dataclasses import dataclass
+from datetime import datetime
 from uuid import uuid4
 
 from prodik.application.common.password_hasher import PasswordHasher
-from prodik.application.common.repositories import UserRepository
+from prodik.application.common.repositories import UserRepository, UserCredentialsRepository
 from prodik.application.common.token_manager import TokenManager
 from prodik.application.common.uow import UoW
 from prodik.application.errors import UserAlreadyExistsError
-from prodik.domain.user import Role, User
+from prodik.domain.user import Role, User, Gender, MaritalStatus, UserCredentials
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RegisterUserRequestDTO:
-    username: str
+    email: str
     password: str
+    full_name: str
+    region: str
+    gender: Gender | None
+    age: int | None
+    marital_status: MaritalStatus | None
 
 
 @dataclass
 class RegisterUserInteractor:
+    user_credentials_repository: UserCredentialsRepository
     user_repository: UserRepository
     password_hasher: PasswordHasher
     token_manager: TokenManager
     uow: UoW
 
-    async def execute(self, request: RegisterUserRequestDTO) -> str:
-        if await self.user_repository.get_by_username(request.username) is not None:
-            raise UserAlreadyExistsError("User with this email already exists")
+    async def execute(self, request: RegisterUserRequestDTO) -> User:
+        user = await self.user_repository.get_by_email(request.email)
+        if user is None:
+            UserAlreadyExistsError("Пользователь уже существует")
 
-        user_uuid = uuid4()
+        user_id = uuid4()
+        now = datetime.now()
         hashed_password = self.password_hasher.hash(request.password)
-        user = User(
-            uuid=user_uuid,
-            username=request.username,
-            password=hashed_password,
+
+        user_model = User(
+            id=user_id,
+            email=request.email,
+            full_name=request.full_name,
             role=Role.USER,
+            is_active=True,
+            region=request.region,
+            gender=request.gender,
+            age=request.age,
+            marital_status=request.marital_status,
+
+            created_at=now,
+            updated_at=now,
         )
 
-        await self.user_repository.create(user)
+        user_credentials = UserCredentials(
+            id=uuid4(),
+            user_id=user_id,
+            hashed_password=hashed_password,
+        )
+
+        await self.user_repository.create(user_model)
+        await self.user_credentials_repository.create(user_credentials)
+        
         await self.uow.commit()
 
-        return self.token_manager.encode(user_uuid, Role.USER)
+        return user_model

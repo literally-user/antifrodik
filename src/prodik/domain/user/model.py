@@ -1,18 +1,44 @@
+from datetime import datetime
 from dataclasses import dataclass
 from enum import StrEnum
 from uuid import UUID
 
 
 class Role(StrEnum):
-    ADMIN = "admin"
-    USER = "user"
+    ADMIN = "ADMIN"
+    USER = "USER"
 
+
+class Gender(StrEnum):
+    MALE = "MALE"
+    FEMALE = "FEMALE"
+
+class MaritalStatus(StrEnum):
+    SINGLE = "SINGLE"
+    MARRIED = "MARRIED"
+    DIVORCED = "DIVORCED"
+    WINDOWED = "WINDOWED"
 
 @dataclass(kw_only=True)
 class User:
-    uuid: UUID
+    id: UUID
 
-    username: str
-    password: str
-
+    email: str
+    full_name: str
     role: Role
+    is_active: bool
+
+    region: str | None
+    gender: Gender | None
+    age: int | None
+    marital_status: MaritalStatus | None
+
+    created_at: datetime
+    updated_at: datetime
+
+@dataclass(kw_only=True)
+class UserCredentials:
+    id: UUID
+    user_id: UUID
+
+    hashed_password: str
