@@ -41,6 +41,9 @@ class User:
     def can_manage_users(self) -> bool:
         return self.role == Role.ADMIN
 
+    def can_change_extra_roles(self) -> bool:
+        return self.role == Role.ADMIN
+
 
 @dataclass(kw_only=True)
 class UserCredentials:

@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
-from prodik.domain.user import User
 from prodik.application.common.identity_provider import IdentityProvider
+from prodik.domain.user import User
+
 
 @dataclass
 class GetCurrentUserInteractor:
