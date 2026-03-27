@@ -38,6 +38,9 @@ class User:
     created_at: datetime
     updated_at: datetime
 
+    def can_manage_users(self) -> bool:
+        return self.role == Role.ADMIN
+
 
 @dataclass(kw_only=True)
 class UserCredentials:
