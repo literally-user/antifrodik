@@ -1,0 +1,33 @@
+services:
+    code:
+        restart: on-failure
+        build: .
+
+    api:
+        container_name: api
+        command: [ "prodik", "run", "api" ]
+        ports:
+            - ${API_PORT}:${API_PORT}
+        expose:
+            - ${API_PORT}
+        extends:
+            service: code
+        volumes:
+            - "./src/prodik/infrastructure/db/migrations/versions/:/home/app/src/prodik/infrastructure/db/migrations/versions/"
+        depends_on:
+            postgres:
+                condition: service_healthy
+        networks:
+            - prodik-network
+        env_file:
+            - "./.env"
+
+    postgres:
+        container_name: postgres
+        image: postgres:16-alpine
+        ports:
+            - 5432:5432
+        networks:
+            - prodik-network
+        env_file:
+            - "./.env"
