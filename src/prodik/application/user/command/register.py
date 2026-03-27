@@ -1,13 +1,16 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from prodik.application.common.password_hasher import PasswordHasher
-from prodik.application.common.repositories import UserRepository, UserCredentialsRepository
+from prodik.application.common.repositories import (
+    UserCredentialsRepository,
+    UserRepository,
+)
 from prodik.application.common.token_manager import TokenManager
 from prodik.application.common.uow import UoW
 from prodik.application.errors import UserAlreadyExistsError
-from prodik.domain.user import Role, User, Gender, MaritalStatus, UserCredentials
+from prodik.domain.user import Gender, MaritalStatus, Role, User, UserCredentials
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -39,7 +42,7 @@ class RegisterUserInteractor:
             UserAlreadyExistsError("Пользователь уже существует")
 
         user_id = uuid4()
-        now = datetime.now()
+        now = datetime.now(tz=UTC)
         hashed_password = self.password_hasher.hash(request.password)
 
         user_model = User(
@@ -67,7 +70,7 @@ class RegisterUserInteractor:
 
         await self.user_repository.create(user_model)
         await self.user_credentials_repository.create(user_credentials)
-        
+
         await self.uow.commit()
 
         return RegisterUserResponseDTO(
