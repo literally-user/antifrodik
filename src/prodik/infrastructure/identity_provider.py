@@ -1,0 +1,50 @@
+from dataclasses import dataclass
+from typing import Final
+
+from fastapi import Request
+from jwt.exceptions import PyJWTError
+
+from prodik.application.common.repositories import UserRepository
+from prodik.application.common.token_manager import TokenManager
+from prodik.application.errors import (
+    IncorrectTokenTypeError,
+    InvalidTokenFormatError,
+    TokenNotFoundError,
+    UserNotFoundError,
+)
+from prodik.domain.user import User
+
+HEADER_NAME: Final[str] = "Authorization"
+TOKEN_TYPE: Final[str] = "Bearer"  # noqa: S105
+TOKEN_PARTS: Final[int] = 2
+
+
+@dataclass
+class IdentityProvider:
+    request: Request
+    user_repository: UserRepository
+    token_manager: TokenManager
+
+    async def get_current_user(self) -> User:
+        header = self.request.headers.get(HEADER_NAME)
+        if header is None:
+            raise TokenNotFoundError("Токен не найден")
+
+        parts = header.split(" ")
+        if len(parts) != TOKEN_PARTS:
+            raise InvalidTokenFormatError("Невалидный формат токена")
+
+        token_type, token = parts
+        if token_type != TOKEN_TYPE:
+            raise IncorrectTokenTypeError("Невалидный тип токена")
+
+        try:
+            user_data = self.token_manager.decode(token)
+        except PyJWTError as exc:
+            raise InvalidTokenFormatError("Невалидный формат токена") from exc
+
+        user = await self.user_repository.get_by_uuid(user_data.get("uuid"))
+        if user is None:
+            raise UserNotFoundError("Пользователь не найден")
+
+        return user

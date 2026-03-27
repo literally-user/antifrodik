@@ -1,8 +1,6 @@
+from dataclasses import dataclass
 from enum import StrEnum
-from typing import Annotated
 from uuid import UUID
-
-from pydantic import BaseModel, Field
 
 
 class Role(StrEnum):
@@ -10,10 +8,11 @@ class Role(StrEnum):
     USER = "user"
 
 
-class User(BaseModel):
-    uuid: Annotated[UUID, Field("Уникальный идентификатор пользователя")]
+@dataclass(kw_only=True)
+class User:
+    uuid: UUID
 
-    username: Annotated[str, Field("Имя пользователя")]
-    password: Annotated[str, Field("Пароль пользователя")]
+    username: str
+    password: str
 
-    role: Annotated[Role, Field("Роль пользователя")]
+    role: Role
