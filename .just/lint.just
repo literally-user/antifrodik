@@ -1,5 +1,5 @@
 [no-cd]
 run:
-    ruff check --fix
     ruff format
+    ruff check --fix
     mypy -p prodik
