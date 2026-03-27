@@ -7,6 +7,9 @@ class ApplicationError(Exception):
 class UserAlreadyExistsError(ApplicationError): ...
 
 
+class WrongCredentialsError(ApplicationError): ...
+
+
 class UserNotFoundError(ApplicationError): ...
 
 

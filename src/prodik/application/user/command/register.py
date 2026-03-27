@@ -11,6 +11,7 @@ from prodik.application.common.token_manager import TokenManager
 from prodik.application.common.uow import UoW
 from prodik.application.errors import UserAlreadyExistsError
 from prodik.domain.user import Gender, MaritalStatus, Role, User, UserCredentials
+from prodik.infrastructure.config import SecretConfig
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -23,10 +24,12 @@ class RegisterUserRequestDTO:
     age: int | None
     marital_status: MaritalStatus | None
 
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RegisterUserResponseDTO:
     access_token: str
     user: User
+
 
 @dataclass
 class RegisterUserInteractor:
@@ -34,6 +37,7 @@ class RegisterUserInteractor:
     user_repository: UserRepository
     password_hasher: PasswordHasher
     token_manager: TokenManager
+    secret_config: SecretConfig
     uow: UoW
 
     async def execute(self, request: RegisterUserRequestDTO) -> RegisterUserResponseDTO:
@@ -55,7 +59,6 @@ class RegisterUserInteractor:
             gender=request.gender,
             age=request.age,
             marital_status=request.marital_status,
-
             created_at=now,
             updated_at=now,
         )
@@ -66,7 +69,9 @@ class RegisterUserInteractor:
             hashed_password=hashed_password,
         )
 
-        access_token = self.token_manager.encode(user_id, user_model.role)
+        access_token = self.token_manager.encode(
+            user_id, user_model.role, self.secret_config.expires_in_seconds
+        )
 
         await self.user_repository.create(user_model)
         await self.user_credentials_repository.create(user_credentials)
