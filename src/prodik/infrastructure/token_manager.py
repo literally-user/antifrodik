@@ -13,14 +13,14 @@ from prodik.infrastructure.config import SecretConfig
 class TokenManagerImpl(TokenManager):
     _config: SecretConfig
 
-    def encode(self, uuid: UUID, role: Role) -> str:
+    def encode(self, uuid: UUID, role: Role, expires_in_seconds: int) -> str:
         now = datetime.now(tz=UTC)
         return jwt.encode(
             {
                 "sub": str(uuid),
                 "role": role,
                 "iat": now,
-                "exp": now + timedelta(hours=1),
+                "exp": now + timedelta(seconds=expires_in_seconds),
             },
             self._config.secret,
             algorithm="HS256",

@@ -13,7 +13,8 @@ class DatabaseConfig(BaseModel):
 
 
 class SecretConfig(BaseModel):
-    secret: str = Field("SECRET")
+    secret: str = Field(alias="SECRET")
+    expires_in_seconds: int = Field(alias="EXPIRES_IN_SECONDS")
 
 
 class Config(BaseModel):
