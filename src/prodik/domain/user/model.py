@@ -1,8 +1,19 @@
+from typing import Final
 from dataclasses import dataclass
 from datetime import datetime
 from enum import StrEnum
 from uuid import UUID
 
+from prodik.application.errors import (FullNameTooShort, FullNameTooLong, AgeTooSmall, AgeTooBig, RegionTooLong, RegionTooShort)
+
+MAX_FULL_NAME_LENGTH: Final[int] = 200
+MIN_FULL_NAME_LENGTH: Final[int] = 2
+
+MIN_AGE: Final[int] = 18
+MAX_AGE: Final[int] = 120
+
+MAX_REGION_LENGTH: Final[int] = 32
+MIN_REGION_LENGTH: Final[int] = 2
 
 class Role(StrEnum):
     ADMIN = "ADMIN"
@@ -48,12 +59,32 @@ class User:
         return self.role == Role.ADMIN
 
     def change_fullname(self, full_name: str) -> None:
+        full_name_length = len(full_name)
+        if full_name_length < MIN_FULL_NAME_LENGTH:
+            raise FullNameTooShort(f"Min fullname length is: {MIN_FULL_NAME_LENGTH}")
+        if full_name_length > MAX_FULL_NAME_LENGTH:
+            raise FullNameTooLong(f"Max fullname length is: {MAX_FULL_NAME_LENGTH}")
+
         self.full_name = full_name
 
     def change_age(self, age: int | None) -> None:
+        if age is not None:
+            if age < MIN_AGE:
+                raise AgeTooSmall(f"Min age is: {MIN_AGE}")
+            if age > MAX_AGE:
+                raise AgeTooBig(f"Max age is: {MAX_AGE}")
+            
         self.age = age
 
     def change_region(self, region: str | None) -> None:
+        if region is not None:
+            region_length = len(region)
+
+            if region_length < MIN_REGION_LENGTH:
+                raise RegionTooShort(f"Min region length is: {MIN_REGION_LENGTH}")
+            if region_length > MAX_REGION_LENGTH:
+                raise RegionTooLong(f"Max region length is: {MAX_REGION_LENGTH}")
+            
         self.region = region
 
     def set_gender(self, gender: Gender | None) -> None:
