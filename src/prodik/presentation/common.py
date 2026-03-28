@@ -2,6 +2,8 @@ from datetime import UTC, datetime
 from typing import Final, TypedDict
 from uuid import uuid4
 
+from starlette.exceptions import HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
 
@@ -50,6 +52,29 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
 }
 
 
+async def validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    field_errors = []
+    for error in exc.errors():
+        field_path = ".".join(str(loc) for loc in error["loc"] if loc != "body")
+        
+        field_errors.append({
+            "field": field_path,
+            "issue": error.get("msg", "Validation error"),
+            "rejectedValue": error.get("input") if "input" in error else None
+        })
+    
+    response = {
+        **base_exception_body(request.url.path),
+        "code": "VALIDATION_FAILED",
+        "message": "Some fields do not pass validation",
+        "fieldErrors": field_errors
+    }
+    
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=response
+    )
+
 async def application_error_handler(
     request: Request, exc: ApplicationError
 ) -> JSONResponse:
@@ -60,8 +85,9 @@ async def application_error_handler(
         ),
     )
     response = {
-        **base_exception_body(request.base_url.path),
+        **base_exception_body(request.url.path),
         "code": exception["exception"],
+        "message": exc.description
     }
     if exc.details is not None:
         response.update({"details": exc.details})
@@ -75,4 +101,5 @@ def include_handlers(app: FastAPI) -> None:
 
 
 def include_exception_handlers(app: FastAPI) -> None:
+    app.add_exception_handler(RequestValidationError, validation_error_handler) # type: ignore
     app.add_exception_handler(ApplicationError, application_error_handler)  # type: ignore
