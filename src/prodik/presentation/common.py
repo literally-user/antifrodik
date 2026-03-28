@@ -2,7 +2,6 @@ from datetime import UTC, datetime
 from typing import Final, TypedDict
 from uuid import uuid4
 
-from starlette.exceptions import HTTPException
 from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
@@ -12,6 +11,7 @@ from prodik.application.errors import (
     NotEnoughRightsError,
     UserAlreadyExistsError,
     WrongCredentialsError,
+    UserDeactivatedError,
 )
 from prodik.presentation.auth import router as auth_router
 from prodik.presentation.root import router as root_router
@@ -49,6 +49,10 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
         "status": status.HTTP_401_UNAUTHORIZED,
         "exception": "UNAUTHORIZED",
     },
+    UserDeactivatedError: {
+        "status": status.HTTP_423_LOCKED,
+        "exception": "USER_INACTIVE",
+    }
 }
 
 

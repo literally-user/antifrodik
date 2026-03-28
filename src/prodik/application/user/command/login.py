@@ -8,6 +8,7 @@ from prodik.application.common.repositories import (
 from prodik.application.common.token_manager import TokenManager
 from prodik.application.errors import (
     WrongCredentialsError,
+    UserDeactivatedError,
 )
 from prodik.domain.user import User
 from prodik.infrastructure.config import SecretConfig
@@ -51,7 +52,7 @@ class LoginUserInteractor:
             raise WrongCredentialsError("Wrong email or password")
 
         if not user.is_active:
-            raise WrongCredentialsError("Wrong email or password")
+            raise UserDeactivatedError("User inactive")
 
         access_token = self.token_manager.encode(
             user.id, user.role, self.secret_config.expires_in_seconds
