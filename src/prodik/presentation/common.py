@@ -13,6 +13,7 @@ from prodik.application.errors import (
     WrongCredentialsError,
 )
 from prodik.presentation.root import router as root_router
+from prodik.presentation.auth import router as auth_router
 
 
 class ExceptionMeta(TypedDict):
@@ -75,6 +76,7 @@ async def application_error_handler(
 
 def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router, tags=["auth"])
+    app.include_router(auth_router, tags=["auth"])
 
 
 def include_exception_handlers(app: FastAPI) -> None:

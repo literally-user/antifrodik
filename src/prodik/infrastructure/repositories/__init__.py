@@ -1,3 +1,3 @@
-from .user import UserRepositoryImpl, UserCredentialsRepositoryImpl
+from .user import UserCredentialsRepositoryImpl, UserRepositoryImpl
 
-__all__ = ("UserRepositoryImpl","UserCredentialsRepositoryImpl")
+__all__ = ("UserCredentialsRepositoryImpl", "UserRepositoryImpl")

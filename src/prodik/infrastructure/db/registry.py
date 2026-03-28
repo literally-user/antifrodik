@@ -29,8 +29,8 @@ user_account_table = Table(
     Column("gender", Enum(Gender)),
     Column("age", Integer),
     Column("marital_status", Enum(MaritalStatus)),
-    Column("created_at", DateTime),
-    Column("updated_at", DateTime),
+    Column("created_at", DateTime(timezone=True)),
+    Column("updated_at", DateTime(timezone=True)),
 )
 
 

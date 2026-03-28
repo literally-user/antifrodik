@@ -19,7 +19,7 @@ class RegisterUserRequestDTO:
     email: str
     password: str
     full_name: str
-    region: str
+    region: str | None
     gender: Gender | None
     age: int | None
     marital_status: MaritalStatus | None
@@ -42,7 +42,7 @@ class RegisterUserInteractor:
 
     async def execute(self, request: RegisterUserRequestDTO) -> RegisterUserResponseDTO:
         user = await self.user_repository.get_by_email(request.email)
-        if user is None:
+        if user is not None:
             raise UserAlreadyExistsError("User already exists")
 
         user_id = uuid4()
