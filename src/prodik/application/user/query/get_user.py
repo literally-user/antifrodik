@@ -17,6 +17,6 @@ class GetUserInteractor:
 
         target_user = await self.user_repository.get_by_id(target_id)
         if not current_user.can_manage_users() and target_user.id != id:
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         return target_user

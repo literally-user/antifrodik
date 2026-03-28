@@ -22,7 +22,7 @@ class GetUsersInteractor:
     async def execute(self, page: int = 0, size: int = 20) -> GetUsersResponseDTO:
         user = await self.identity_provider.get_current_user()
         if not user.can_manage_users():
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         users = await self.user_repository.get_users_by_offset(page, size)
 

@@ -35,22 +35,22 @@ class LoginUserInteractor:
     async def execute(self, request: LoginUserRequestDTO) -> LoginUserResponseDTO:
         user = await self.user_repository.get_by_email(request.email)
         if user is None:
-            raise UserNotFoundError("Пользователь не найден")
+            raise UserNotFoundError("User not found")
 
         user_credentials = await self.user_credentials_repository.get_by_user_id(
             user.id
         )
         if user_credentials is None:
-            raise UserNotFoundError("Пользователь не найден")
+            raise UserNotFoundError("User not found")
 
         hashed_password = self.password_hasher.hash(request.password)
         if not self.password_hasher.verify(
             hashed_password, user_credentials.hashed_password
         ):
-            raise WrongCredentialsError("Неверный email или пароль")
+            raise WrongCredentialsError("Wrong email or password")
 
         if not user.is_active:
-            raise UserDeactivatedError("Пользователь деактивирован")
+            raise UserDeactivatedError("User deactivated")
 
         access_token = self.token_manager.encode(
             user.id, user.role, self.secret_config.expires_in_seconds

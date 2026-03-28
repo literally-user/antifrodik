@@ -28,7 +28,7 @@ class UpdateProfileInteractor:
 
         target_user = await self.user_repository.get_by_id(target_id)
         if not current_user.can_manage_users() and target_user.id != id:
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
         
         target_user.change_fullname(request.full_name)
         target_user.change_age(request.age)
@@ -39,7 +39,7 @@ class UpdateProfileInteractor:
         if current_user.can_change_extra_roles() and (
             request.role is not None or request.is_active is not None
         ):
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         if request.role is not None:
             target_user.set_role(request.role)

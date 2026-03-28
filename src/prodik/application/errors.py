@@ -1,7 +1,16 @@
+from typing import TypedDict
+
+class DetailsMeta(TypedDict):
+    field: str
+    value: str
+
 class ApplicationError(Exception):
-    def __init__(self, detail: str) -> None:
-        self.detail = detail
-        super().__init__(detail)
+    description: str
+    details: DetailsMeta | None
+
+    def __init__(self, description: str, details: DetailsMeta | None = None) -> None:
+        self.description = description
+        super().__init__(description)
 
 
 class UserAlreadyExistsError(ApplicationError): ...

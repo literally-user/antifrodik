@@ -36,7 +36,7 @@ class CurrentUserUpdateProfileInteractor:
         if current_user.can_change_extra_roles() and (
             request.role is not None or request.is_active is not None
         ):
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         if request.role is not None:
             current_user.set_role(request.role)

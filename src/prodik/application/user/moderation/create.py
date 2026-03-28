@@ -34,11 +34,11 @@ class CreateUserInteractor:
     async def execute(self, request: CreateUserRequestDTO) -> User:
         current_user = await self.identity_provider.get_current_user()
         if not current_user.can_manage_users():
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         user = await self.user_repository.get_by_email(request.email)
         if user is not None:
-            raise UserAlreadyExistsError("Пользователь уже существует")
+            raise UserAlreadyExistsError("User already exists")
 
         now = datetime.now(tz=UTC)
         user_id = uuid4()

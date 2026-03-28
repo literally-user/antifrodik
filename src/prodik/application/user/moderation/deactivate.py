@@ -15,11 +15,11 @@ class DeactivateUserInteractor:
     async def execute(self, id: UUID) -> None:
         current_user = await self.identity_provider.get_current_user()
         if not current_user.can_manage_users():
-            raise NotEnoughRightsError("Недостаточно прав для проведения операции")
+            raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         user = await self.user_repository.get_by_id(id)
         if user is None:
-            UserNotFoundError("Пользователь не найден")
+            raise UserNotFoundError("User not found")
 
         user.deactivate()
 
