@@ -43,7 +43,7 @@ class RegisterUserInteractor:
     async def execute(self, request: RegisterUserRequestDTO) -> RegisterUserResponseDTO:
         user = await self.user_repository.get_by_email(request.email)
         if user is not None:
-            raise UserAlreadyExistsError("User already exists")
+            raise UserAlreadyExistsError("User already exists", details={"field": "email", "value": request.email})
 
         user_id = uuid4()
         now = datetime.now(tz=UTC)
