@@ -9,7 +9,7 @@ from prodik.application.common.repositories import (
     UserRepository,
 )
 from prodik.domain.user import User, UserCredentials
-from prodik.infrastructure.db.registry import user_account_table, user_credentials_table
+from prodik.infrastructure.db.registry import user_account_table
 
 
 @dataclass
@@ -67,9 +67,7 @@ class UserRepositoryImpl(UserRepository):
 
     async def get_by_email(self, email: str) -> User | None:
         result = await self._session.execute(
-            sqlalchemy.select(user_account_table).where(
-                user_account_table.c.email == email
-            )
+            sqlalchemy.select(User).where(User.email == email)  # type: ignore
         )
         return result.scalar_one_or_none()
 
@@ -80,7 +78,7 @@ class UserCredentialsRepositoryImpl(UserCredentialsRepository):
 
     async def create(self, credentials: UserCredentials) -> None:
         await self._session.execute(
-            sqlalchemy.insert(user_credentials_table).values(
+            sqlalchemy.insert(UserCredentials).values(
                 id=credentials.id,
                 user_id=credentials.user_id,
                 hashed_password=credentials.hashed_password,
@@ -89,8 +87,6 @@ class UserCredentialsRepositoryImpl(UserCredentialsRepository):
 
     async def get_by_user_id(self, user_id: UUID) -> UserCredentials | None:
         result = await self._session.execute(
-            sqlalchemy.select(user_credentials_table).where(
-                user_credentials_table.c.user_id == user_id
-            )
+            sqlalchemy.select(UserCredentials).where(UserCredentials.user_id == user_id)  # type: ignore
         )
         return result.scalar_one_or_none()

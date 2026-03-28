@@ -10,14 +10,15 @@ class RegisterUserRequest(BaseModel):
     password: Annotated[
         SecretStr,
         Field(
-            description="Password. Requirements:\n- Minimum 8 characters\n- Minimum 1 letter (A-Z or a-z)\n- Minimum 1 digit (0-9)\n",
+            description="Password. Requirements:\n- Minimum 8 characters\n",
             max_length=72,
             min_length=8,
         ),
     ]
-    fullName: Annotated[
+    full_name: Annotated[
         str,
         Field(
+            alias="fullName",
             description="User full name",
             examples=["Ivan Ivanov"],
             max_length=200,
@@ -37,15 +38,43 @@ class RegisterUserRequest(BaseModel):
         int | None,
         Field(description="Age (minimum 18 years)", examples=[25], ge=18, le=120),
     ] = None
-    maritalStatus: MaritalStatus | None = None
+    marital_status: Annotated[MaritalStatus | None, Field(alias="MaritalStatus")] = None
+
+    class Config:
+        populate_by_name = True
 
 
 class RegisterUserResponse(BaseModel):
-    accessToken: Annotated[
+    access_token: Annotated[
         str,
         Field(
-            description="JWT token for request authorization.\nPass in header: Authorization: Bearer <token>\n",
+            alias="accessToken",
+            description="JWT token for request authorization.\n",
             examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
         ),
     ]
     user: User
+
+    class Config:
+        populate_by_name = True
+
+
+class LoginUserRequest(BaseModel):
+    email: Annotated[EmailStr, Field(max_length=254)]
+    password: Annotated[SecretStr, Field(max_length=72, min_length=8)]
+
+
+class LoginUserResponse(BaseModel):
+    access_token: Annotated[
+        str,
+        Field(
+            alias="accessToken",
+            description="JWT token for request authorization.\n",
+            examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
+        ),
+    ]
+    expires_in: Annotated[int, Field(alias="expiresIn")]
+    user: User
+
+    class Config:
+        populate_by_name = True

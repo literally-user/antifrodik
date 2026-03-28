@@ -7,8 +7,6 @@ from prodik.application.common.repositories import (
 )
 from prodik.application.common.token_manager import TokenManager
 from prodik.application.errors import (
-    UserDeactivatedError,
-    UserNotFoundError,
     WrongCredentialsError,
 )
 from prodik.domain.user import User
@@ -39,22 +37,21 @@ class LoginUserInteractor:
     async def execute(self, request: LoginUserRequestDTO) -> LoginUserResponseDTO:
         user = await self.user_repository.get_by_email(request.email)
         if user is None:
-            raise UserNotFoundError("User not found")
+            raise WrongCredentialsError("Wrong email or password")
 
         user_credentials = await self.user_credentials_repository.get_by_user_id(
             user.id
         )
         if user_credentials is None:
-            raise UserNotFoundError("User not found")
+            raise WrongCredentialsError("Wrong email or password")
 
-        hashed_password = self.password_hasher.hash(request.password)
         if not self.password_hasher.verify(
-            hashed_password, user_credentials.hashed_password
+            user_credentials.hashed_password, request.password
         ):
             raise WrongCredentialsError("Wrong email or password")
 
         if not user.is_active:
-            raise UserDeactivatedError("User deactivated")
+            raise WrongCredentialsError("Wrong email or password")
 
         access_token = self.token_manager.encode(
             user.id, user.role, self.secret_config.expires_in_seconds

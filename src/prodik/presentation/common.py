@@ -9,11 +9,10 @@ from prodik.application.errors import (
     ApplicationError,
     NotEnoughRightsError,
     UserAlreadyExistsError,
-    UserDeactivatedError,
     WrongCredentialsError,
 )
-from prodik.presentation.root import router as root_router
 from prodik.presentation.auth import router as auth_router
+from prodik.presentation.root import router as root_router
 
 
 class ExceptionMeta(TypedDict):
@@ -43,10 +42,6 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     NotEnoughRightsError: {
         "status": status.HTTP_403_FORBIDDEN,
         "exception": "FORBIDDEN",
-    },
-    UserDeactivatedError: {
-        "status": status.HTTP_423_LOCKED,
-        "exception": "USER_INACTIVE",
     },
     WrongCredentialsError: {
         "status": status.HTTP_401_UNAUTHORIZED,
