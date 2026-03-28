@@ -12,7 +12,7 @@ from prodik.application.errors import (
     UserDeactivatedError,
     WrongCredentialsError,
 )
-from prodik.presentation.users import router as users_router
+from prodik.presentation.root import router as root_router
 
 
 class ExceptionMeta(TypedDict):
@@ -74,7 +74,7 @@ async def application_error_handler(
 
 
 def include_handlers(app: FastAPI) -> None:
-    app.include_router(users_router)
+    app.include_router(root_router, tags=["auth"])
 
 
 def include_exception_handlers(app: FastAPI) -> None:

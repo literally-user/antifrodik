@@ -1,13 +1,14 @@
 from dishka import Provider, Scope, WithParents, provide_all
 
 from prodik.infrastructure.password_hasher import PasswordHasherImpl
-from prodik.infrastructure.repositories import UserRepositoryImpl
+from prodik.infrastructure.repositories import UserRepositoryImpl, UserCredentialsRepositoryImpl
 from prodik.infrastructure.token_manager import TokenManagerImpl
 from prodik.infrastructure.uow import UoWImpl
 
 
 class InfrastructureProvider(Provider):
     provides = provide_all(
+        WithParents[UserCredentialsRepositoryImpl],
         WithParents[UserRepositoryImpl],
         WithParents[PasswordHasherImpl],
         WithParents[TokenManagerImpl],

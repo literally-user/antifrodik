@@ -4,7 +4,7 @@ from uuid import UUID
 from prodik.application.common.identity_provider import IdentityProvider
 from prodik.application.common.repositories import UserRepository
 from prodik.application.common.uow import UoW
-from prodik.application.errors import NotEnoughRightsError
+from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
 from prodik.domain.user import Gender, MaritalStatus, Role, User
 
 
@@ -29,6 +29,8 @@ class UpdateProfileInteractor:
         current_user = await self.identity_provider.get_current_user()
 
         target_user = await self.user_repository.get_by_id(target_id)
+        if target_user is None:
+            raise UserNotFoundError("User not found")
         if not current_user.can_manage_users() and target_user.id != id:
             raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
