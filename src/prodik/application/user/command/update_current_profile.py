@@ -10,12 +10,12 @@ from prodik.domain.user import Gender, MaritalStatus, Role, User
 @dataclass(slots=True, frozen=True, kw_only=True)
 class CurrentUserUpdateProfileRequestDTO:
     full_name: str
-    age: int | None = None
-    region: str | None = None
-    gender: Gender | None = None
-    marital_status: MaritalStatus | None = None
-    role: Role | None
-    is_active: bool | None
+    age: int | None
+    region: str | None
+    gender: Gender | None
+    marital_status: MaritalStatus | None
+    role: Role | None = None
+    is_active: bool | None = None
 
 
 @dataclass
@@ -33,7 +33,7 @@ class CurrentUserUpdateProfileInteractor:
         current_user.set_gender(request.gender)
         current_user.set_marital_status(request.marital_status)
 
-        if current_user.can_change_extra_roles() and (
+        if not current_user.can_change_extra_roles() and (
             request.role is not None or request.is_active is not None
         ):
             raise NotEnoughRightsError("Insufficient rights to perform the operation")
