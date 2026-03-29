@@ -7,8 +7,8 @@ from prodik.application.common.repositories import (
 )
 from prodik.application.common.token_manager import TokenManager
 from prodik.application.errors import (
-    WrongCredentialsError,
     UserDeactivatedError,
+    WrongCredentialsError,
 )
 from prodik.domain.user import User
 from prodik.infrastructure.config import SecretConfig

@@ -1,10 +1,10 @@
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 import pytest
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
-from prodik.infrastructure.config import Config
 from prodik.bootstrap.api.run import create_app
+from prodik.infrastructure.config import Config
 
 test_config = {
     "api_config": {
@@ -20,9 +20,12 @@ test_config = {
     },
 }
 
-@pytest.fixture()
+
+@pytest.fixture
 async def test_client() -> AsyncGenerator[AsyncClient]:
     config = Config(**test_config)
     app = create_app(config)
-    async with AsyncClient(base_url="http://mock", transport=ASGITransport(app)) as client:
+    async with AsyncClient(
+        base_url="http://mock", transport=ASGITransport(app)
+    ) as client:
         yield client
