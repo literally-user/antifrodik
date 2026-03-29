@@ -9,7 +9,6 @@ from prodik.application.common.repositories import (
     UserRepository,
 )
 from prodik.domain.user import User, UserCredentials
-from prodik.infrastructure.db.registry import user_account_table
 
 
 @dataclass
@@ -18,7 +17,7 @@ class UserRepositoryImpl(UserRepository):
 
     async def create(self, user: User) -> None:
         await self._session.execute(
-            sqlalchemy.insert(user_account_table).values(
+            sqlalchemy.insert(User).values(
                 id=user.id,
                 email=user.email,
                 full_name=user.full_name,
@@ -35,15 +34,15 @@ class UserRepositoryImpl(UserRepository):
 
     async def delete(self, user: User) -> None:
         await self._session.execute(
-            sqlalchemy.delete(user_account_table).where(
-                user_account_table.c.id == user.id
+            sqlalchemy.delete(User).where(
+                User.id == user.id  # type: ignore
             )
         )
 
     async def update(self, user: User) -> None:
         await self._session.execute(
-            sqlalchemy.update(user_account_table)
-            .where(user_account_table.c.id == user.id)
+            sqlalchemy.update(User)
+            .where(User.id == user.id)  # type: ignore
             .values(
                 email=user.email,
                 full_name=user.full_name,
@@ -59,8 +58,8 @@ class UserRepositoryImpl(UserRepository):
 
     async def get_by_id(self, target_id: UUID) -> User | None:
         result = await self._session.execute(
-            sqlalchemy.select(user_account_table).where(
-                user_account_table.c.id == target_id
+            sqlalchemy.select(User).where(
+                User.id == target_id  # type: ignore
             )
         )
         return result.scalar_one_or_none()
