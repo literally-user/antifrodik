@@ -4,12 +4,12 @@ from collections.abc import AsyncGenerator
 import pytest
 from sqlalchemy import text
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 
 from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.api.run import create_app, start_mapper
 from prodik.infrastructure.config import Config
+from prodik.infrastructure.db.registry import metadata
 
 TEST_DB_URL = "postgresql+asyncpg://postgres:admin_password@127.0.0.1:5432/test"
 
@@ -27,6 +27,17 @@ TEST_CONFIG: dict[str, dict[str, str | int]] = {
     },
 }
 
+TABLES_TO_TRUNCATE = [
+    table.name
+    for table in reversed(metadata.sorted_tables)
+    if table.name != "alembic_version"
+]
+TRUNCATE_TABLES_SQL = (
+    f"TRUNCATE TABLE {', '.join(TABLES_TO_TRUNCATE)} RESTART IDENTITY CASCADE"
+    if TABLES_TO_TRUNCATE
+    else None
+)
+
 
 def pytest_configure(config: pytest.Config) -> None:
     start_mapper()
@@ -42,7 +53,6 @@ async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
     engine = create_async_engine(
         config.database_config.url,
         future=True,
-        poolclass=NullPool,
     )
 
     async with engine.begin() as connection:
@@ -59,25 +69,9 @@ async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
 async def test_session(test_engine: AsyncEngine) -> AsyncGenerator[None]:
     async with AsyncSession(test_engine) as session:
         yield
-        await session.execute(
-            text("""
-                DO $$
-                DECLARE
-                    tb text;
-                BEGIN
-                    FOR tb IN (
-                        SELECT tablename
-                        FROM pg_catalog.pg_tables
-                        WHERE schemaname = 'public'
-                        AND tablename != 'alembic_version'
-                    )
-                    LOOP
-                        EXECUTE 'TRUNCATE TABLE ' || tb || ' CASCADE';
-                    END LOOP;
-                END $$;
-            """),
-        )
-        await session.commit()
+        if TRUNCATE_TABLES_SQL is not None:
+            await session.execute(text(TRUNCATE_TABLES_SQL))
+            await session.commit()
 
 @pytest.fixture
 async def test_client(config: Config) -> AsyncGenerator[AsyncClient, None]:
