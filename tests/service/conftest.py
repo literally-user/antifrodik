@@ -8,12 +8,11 @@ from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 
 from prodik.application.common.password_hasher import PasswordHasher
-from prodik.domain.user import UserCredentials
 from prodik.bootstrap.di.container import get_async_container
 from prodik.bootstrap.cli import run_migrations
-from prodik.bootstrap.api.run import create_app, start_mapper
+from prodik.bootstrap.api import create_app
 from prodik.infrastructure.config import Config
-from prodik.infrastructure.db.registry import metadata
+from prodik.infrastructure.db.registry import metadata, start_mapper
 
 from tests.service.factories import UserWithCredentials, create_user_with_credentials
 
@@ -50,13 +49,13 @@ def pytest_configure(config: pytest.Config) -> None:
 
 @pytest.fixture(scope="session")
 def config() -> Config:
-    return Config(**TEST_CONFIG) # type: ignore
+    return Config(**TEST_CONFIG)
 
 @pytest.fixture
 async def test_password_hasher(config: Config) -> PasswordHasher:
     container = get_async_container(config)
     async with container() as con:
-        return await con.get(PasswordHasher)
+        return await con.get(PasswordHasher) # type: ignore[no-any-return]
 
 @pytest.fixture
 async def test_user_with_credentials(
