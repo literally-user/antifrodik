@@ -15,6 +15,7 @@ dependencies = [
     "pydantic[email]>=2.12.5",
     "pyjwt>=2.11.0",
     "pytest>=9.0.2",
+    "pytest-asyncio>=1.3.0",
     "sqlalchemy>=2.0.46",
     "uvicorn>=0.40.0",
 ]
@@ -95,7 +96,6 @@ plugins = [
     "pydantic.mypy",
 ]
 files = ["src/prodik"]
-
 
 [project.scripts]
 prodik = "prodik.bootstrap.cli:main"

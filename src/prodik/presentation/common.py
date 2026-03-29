@@ -101,7 +101,7 @@ async def application_error_handler(
 
 def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router, tags=["auth"])
-    app.include_router(auth_router, tags=["auth"])
+    app.include_router(auth_router, tags=["auth"], prefix="/auth")
 
 
 def include_exception_handlers(app: FastAPI) -> None:

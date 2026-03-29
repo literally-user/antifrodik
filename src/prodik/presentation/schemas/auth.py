@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import BaseModel, EmailStr, Field, SecretStr
+from pydantic import BaseModel, EmailStr, Field, SecretStr, ConfigDict
 
 from prodik.domain.user import Gender, MaritalStatus, User
 
@@ -40,8 +40,9 @@ class RegisterUserRequest(BaseModel):
     ] = None
     marital_status: Annotated[MaritalStatus | None, Field(alias="MaritalStatus")] = None
 
-    class Config:
+    model_config = ConfigDict(
         populate_by_name = True
+    )
 
 
 class RegisterUserResponse(BaseModel):
@@ -55,8 +56,9 @@ class RegisterUserResponse(BaseModel):
     ]
     user: User
 
-    class Config:
+    model_config = ConfigDict(
         populate_by_name = True
+    )
 
 
 class LoginUserRequest(BaseModel):
@@ -76,5 +78,6 @@ class LoginUserResponse(BaseModel):
     expires_in: Annotated[int, Field(alias="expiresIn")]
     user: User
 
-    class Config:
+    model_config = ConfigDict(
         populate_by_name = True
+    )
