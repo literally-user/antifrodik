@@ -12,6 +12,9 @@ services:
             file: docker-compose.base.yaml
             service: postgres
 
+        ports:
+            - 5342:5342
+
         volumes:
             - ./.docker-volumes/postgres:/var/lib/postgresql/data
 

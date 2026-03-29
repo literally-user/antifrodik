@@ -38,6 +38,8 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
     await app.state.dishka_container.close()
 
+def init_mapper():
+    start_mapper()
 
 def create_app(settings: Config) -> FastAPI:
     app = FastAPI(
@@ -62,13 +64,14 @@ def create_app(settings: Config) -> FastAPI:
     setup_dishka(app=app, container=container)
     include_handlers(app)
     include_exception_handlers(app)
-    start_mapper()
 
     return app
 
 
 def run_http(_argv: list[str]) -> None:
     config = Config()
+    
+    start_mapper()
     app = create_app(config)
 
     uvicorn.run(

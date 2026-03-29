@@ -1,3 +1,4 @@
+from os import environ
 import asyncio
 from logging.config import fileConfig
 
@@ -5,7 +6,7 @@ from alembic import context
 from sqlalchemy import Connection, pool
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from prodik.infrastructure.config import Config
+from prodik.infrastructure.config import DatabaseConfig
 from prodik.infrastructure.db.registry import metadata
 
 # this is the Alembic Config object, which provides
@@ -28,7 +29,7 @@ target_metadata = metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-database_config = Config().database_config
+database_config = DatabaseConfig(**environ)
 config.set_main_option("sqlalchemy.url", database_config.url)
 
 
