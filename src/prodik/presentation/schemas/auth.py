@@ -64,5 +64,5 @@ class LoginUserResponse(BaseModel):
             examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
         ),
     ]
-    expires_in: Annotated[int, Field(alias="expiresIn")]
+    expires_in: int
     user: User

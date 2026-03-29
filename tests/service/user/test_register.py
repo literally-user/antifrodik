@@ -3,7 +3,7 @@ import pytest
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
 
-from prodik.domain.user import User
+from tests.service.factories import UserWithCredentials
 
 @pytest.mark.asyncio
 async def test_register_ok(test_client: AsyncClient) -> None:
@@ -35,9 +35,9 @@ async def test_register_ok(test_client: AsyncClient) -> None:
 )
 
 @pytest.mark.asyncio
-async def test_register_email_already_exists(test_client: AsyncClient, test_user: User) -> None:
+async def test_register_email_already_exists(test_client: AsyncClient, test_user_with_credentials: UserWithCredentials) -> None:
     response = await test_client.post('/api/v1/auth/register', json={
-        "email": test_user.email,
+        "email": test_user_with_credentials.user.email,
         "password": "SuperSecretPassword123",
         "full_name": "Ivan Kirpichnikov",
         "region": "RU-MOW",
@@ -55,14 +55,14 @@ async def test_register_email_already_exists(test_client: AsyncClient, test_user
         path="/api/v1/auth/register",
         details=IsPartialDict(
             field="email",
-            value=test_user.email,
+            value=test_user_with_credentials.user.email,
         )
     )
 
 @pytest.mark.asyncio
-async def test_register_validation_failed(test_client: AsyncClient, test_user: User) -> None:
+async def test_register_validation_failed(test_client: AsyncClient, test_user_with_credentials: UserWithCredentials) -> None:
     response = await test_client.post('/api/v1/auth/register', json={
-        "email": test_user.email,
+        "email": test_user_with_credentials.user.email,
         "password": "SuperSecretPassword123",
         "full_name": "Ivan Kirpichnikov",
         "region": "RU-MOW",

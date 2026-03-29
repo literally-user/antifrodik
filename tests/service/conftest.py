@@ -7,13 +7,15 @@ from sqlalchemy import text
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 
-from prodik.domain.user import User
+from prodik.application.common.password_hasher import PasswordHasher
+from prodik.domain.user import UserCredentials
+from prodik.bootstrap.di.container import get_async_container
 from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.api.run import create_app, start_mapper
 from prodik.infrastructure.config import Config
 from prodik.infrastructure.db.registry import metadata
 
-from tests.service.factories import create_user
+from tests.service.factories import UserWithCredentials, create_user_with_credentials
 
 TEST_DB_URL = "postgresql+asyncpg://postgres:admin_password@127.0.0.1:5432/test"
 
@@ -46,16 +48,26 @@ TRUNCATE_TABLES_SQL = (
 def pytest_configure(config: pytest.Config) -> None:
     start_mapper()
 
-
 @pytest.fixture(scope="session")
 def config() -> Config:
-    return Config(**TEST_CONFIG)
+    return Config(**TEST_CONFIG) # type: ignore
 
 @pytest.fixture
-async def test_user(test_session: AsyncSession, faker: Faker) -> User:
-    user = await create_user(test_session, faker)
+async def test_password_hasher(config: Config) -> PasswordHasher:
+    container = get_async_container(config)
+    async with container() as con:
+        return await con.get(PasswordHasher)
+
+@pytest.fixture
+async def test_user_with_credentials(
+    test_session: AsyncSession,
+    faker: Faker,
+    test_password_hasher: PasswordHasher
+) -> UserWithCredentials:
+    user_with_credentials = await create_user_with_credentials(test_session, faker, test_password_hasher)
     await test_session.commit()
-    return user
+
+    return user_with_credentials
 
 @pytest.fixture(scope="session", autouse=True)
 async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
