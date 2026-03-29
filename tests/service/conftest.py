@@ -2,14 +2,18 @@ import asyncio
 from collections.abc import AsyncGenerator
 
 import pytest
+from faker import Faker
 from sqlalchemy import text
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession
 
+from prodik.domain.user import User
 from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.api.run import create_app, start_mapper
 from prodik.infrastructure.config import Config
 from prodik.infrastructure.db.registry import metadata
+
+from tests.service.factories import create_user
 
 TEST_DB_URL = "postgresql+asyncpg://postgres:admin_password@127.0.0.1:5432/test"
 
@@ -47,6 +51,11 @@ def pytest_configure(config: pytest.Config) -> None:
 def config() -> Config:
     return Config(**TEST_CONFIG)
 
+@pytest.fixture
+async def test_user(test_session: AsyncSession, faker: Faker) -> User:
+    user = await create_user(test_session, faker)
+    await test_session.commit()
+    return user
 
 @pytest.fixture(scope="session", autouse=True)
 async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
@@ -66,9 +75,9 @@ async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
     await engine.dispose()
 
 @pytest.fixture(autouse=True)
-async def test_session(test_engine: AsyncEngine) -> AsyncGenerator[None]:
+async def test_session(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession]:
     async with AsyncSession(test_engine) as session:
-        yield
+        yield session
         if TRUNCATE_TABLES_SQL is not None:
             await session.execute(text(TRUNCATE_TABLES_SQL))
             await session.commit()
