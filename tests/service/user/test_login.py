@@ -5,8 +5,8 @@ from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 from dirty_equals import IsPartialDict, IsStr, IsInt
 
+from prodik.domain.user import User
 from tests.service.factories import UserWithCredentials
-from prodik.infrastructure.db.registry import user_account_table
 
 @pytest.mark.asyncio
 async def test_login_ok(
@@ -63,11 +63,10 @@ async def test_login_user_deactivated(
     test_user_with_credentials: UserWithCredentials,
 ) -> None:
     await test_session.execute(
-        update(user_account_table).where(
-                user_account_table.c.email == test_user_with_credentials.user.email
+        update(User).where(
+                User.email == test_user_with_credentials.user.email # type: ignore
             ).values(is_active=False)
         )
-    await test_session.commit()
 
     response = await test_client.post("/api/v1/auth/login", json={
         "email": test_user_with_credentials.user.email,

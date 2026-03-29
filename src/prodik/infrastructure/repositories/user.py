@@ -4,7 +4,7 @@ from uuid import UUID
 import sqlalchemy
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prodik.application.common.repositories import (
+from prodik.application.interfaces.repositories import (
     UserCredentialsRepository,
     UserRepository,
 )

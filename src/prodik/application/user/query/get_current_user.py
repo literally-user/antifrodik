@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from prodik.application.common.identity_provider import IdentityProvider
+from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.domain.user import User
 
 

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from argon2 import PasswordHasher as Argon2Hasher
 from argon2.exceptions import VerifyMismatchError
 
-from prodik.application.common.password_hasher import PasswordHasher
+from prodik.application.interfaces.password_hasher import PasswordHasher
 
 
 @dataclass

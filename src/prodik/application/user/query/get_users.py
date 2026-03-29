@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from prodik.application.common.identity_provider import IdentityProvider
-from prodik.application.common.repositories import UserRepository
+from prodik.application.interfaces.identity_provider import IdentityProvider
+from prodik.application.interfaces.repositories import UserRepository
 from prodik.application.errors import NotEnoughRightsError
 from prodik.domain.user import User
 

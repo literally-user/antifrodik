@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 
-from prodik.application.common.password_hasher import PasswordHasher
-from prodik.application.common.repositories import (
+from prodik.application.interfaces.password_hasher import PasswordHasher
+from prodik.application.interfaces.repositories import (
     UserCredentialsRepository,
     UserRepository,
 )
-from prodik.application.common.token_manager import TokenManager
+from prodik.application.interfaces.token_manager import TokenManager
 from prodik.application.errors import (
     UserDeactivatedError,
     WrongCredentialsError,

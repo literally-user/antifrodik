@@ -1,8 +1,11 @@
+from dataclasses import dataclass
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prodik.application.common.uow import UoW
+from prodik.application.interfaces.uow import UoW
 
 
+@dataclass
 class UoWImpl(UoW):
     _session: AsyncSession
 

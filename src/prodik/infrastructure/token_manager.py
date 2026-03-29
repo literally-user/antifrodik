@@ -4,7 +4,7 @@ from uuid import UUID
 
 import jwt
 
-from prodik.application.common.token_manager import TokenManager, UserData
+from prodik.application.interfaces.token_manager import TokenManager, UserData
 from prodik.domain.user.model import Role
 from prodik.infrastructure.config import SecretConfig
 

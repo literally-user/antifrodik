@@ -6,7 +6,7 @@ from faker import Faker
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from prodik.application.common.password_hasher import PasswordHasher
+from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.domain.user import User, Role, Gender, MaritalStatus, UserCredentials
 
 

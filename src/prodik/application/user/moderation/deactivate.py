@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from uuid import UUID
 
-from prodik.application.common.identity_provider import IdentityProvider
-from prodik.application.common.repositories import UserRepository
-from prodik.application.common.uow import UoW
+from prodik.application.interfaces.identity_provider import IdentityProvider
+from prodik.application.interfaces.repositories import UserRepository
+from prodik.application.interfaces.uow import UoW
 from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
 
 

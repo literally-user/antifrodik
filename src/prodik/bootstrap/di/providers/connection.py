@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
-from prodik.application.common.uow import UoW
+from prodik.application.interfaces.uow import UoW
 from prodik.infrastructure.config import DatabaseConfig
 
 

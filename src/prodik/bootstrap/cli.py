@@ -20,24 +20,12 @@ def get_alembic_config_path() -> Iterator[Path]:
         yield path
 
 
-def run_migrations(database_url: str | None = None, *_args: str) -> None:
+def run_migrations(*_args: str) -> None:
     alembic_path_gen = get_alembic_config_path()
     alembic_path = str(next(alembic_path_gen))
-    old_database_url = os.environ.get("DATABASE_URL")
-    if database_url is not None:
-        os.environ["DATABASE_URL"] = database_url
-
-    try:
-        alembic.config.main(
-            argv=["-c", alembic_path, "upgrade", "head"],
-        )
-    finally:
-        if database_url is not None:
-            if old_database_url is None:
-                os.environ.pop("DATABASE_URL", None)
-            else:
-                os.environ["DATABASE_URL"] = old_database_url
-
+    alembic.config.main(
+        argv=["-c", alembic_path, "upgrade", "head"],
+    )
     with contextlib.suppress(StopIteration):
         next(alembic_path_gen)
 
