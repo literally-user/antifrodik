@@ -1,15 +1,15 @@
 from dataclasses import dataclass
 
+from prodik.application.errors import (
+    UserDeactivatedError,
+    WrongCredentialsError,
+)
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
     UserCredentialsRepository,
     UserRepository,
 )
 from prodik.application.interfaces.token_manager import TokenManager
-from prodik.application.errors import (
-    UserDeactivatedError,
-    WrongCredentialsError,
-)
 from prodik.domain.user import User
 from prodik.infrastructure.config import SecretConfig
 

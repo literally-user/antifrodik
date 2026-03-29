@@ -104,8 +104,8 @@ async def test_dishka_container(test_session: AsyncSession, config: Config) -> A
     return container
 
 @pytest.fixture
-async def test_client(config: Config, test_dishka_container: AsyncContainer) -> AsyncGenerator[AsyncClient, None]:
-    app = create_app(config)
+async def test_client(test_dishka_container: AsyncContainer) -> AsyncGenerator[AsyncClient, None]:
+    app = create_app()
     setup_dishka(app=app, container=test_dishka_container)
 
     async with AsyncClient(

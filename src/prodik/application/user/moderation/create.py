@@ -2,13 +2,13 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from prodik.application.errors import NotEnoughRightsError, UserAlreadyExistsError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import (
     UserCredentialsRepository,
     UserRepository,
 )
 from prodik.application.interfaces.uow import UoW
-from prodik.application.errors import NotEnoughRightsError, UserAlreadyExistsError
 from prodik.domain.user import Gender, MaritalStatus, Role, User, UserCredentials
 
 

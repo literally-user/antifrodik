@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from uuid import UUID
 
+from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import UserRepository
 from prodik.application.interfaces.uow import UoW
-from prodik.application.errors import NotEnoughRightsError, UserNotFoundError
 from prodik.domain.user import Gender, MaritalStatus, Role, User
 
 

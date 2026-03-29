@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 
+from prodik.application.errors import NotEnoughRightsError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import UserRepository
 from prodik.application.interfaces.uow import UoW
-from prodik.application.errors import NotEnoughRightsError
 from prodik.domain.user import Gender, MaritalStatus, Role, User
 
 

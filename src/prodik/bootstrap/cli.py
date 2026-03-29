@@ -1,5 +1,4 @@
 import contextlib
-import os
 import sys
 from collections.abc import Callable, Iterator
 from importlib.resources import as_file, files

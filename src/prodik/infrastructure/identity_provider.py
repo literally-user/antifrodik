@@ -4,14 +4,14 @@ from typing import Final
 from fastapi import Request
 from jwt.exceptions import PyJWTError
 
-from prodik.application.interfaces.repositories import UserRepository
-from prodik.application.interfaces.token_manager import TokenManager
 from prodik.application.errors import (
     IncorrectTokenTypeError,
     InvalidTokenFormatError,
     TokenNotFoundError,
     UserNotFoundError,
 )
+from prodik.application.interfaces.repositories import UserRepository
+from prodik.application.interfaces.token_manager import TokenManager
 from prodik.domain.user import User
 
 HEADER_NAME: Final[str] = "Authorization"
