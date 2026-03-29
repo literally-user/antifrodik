@@ -67,7 +67,7 @@ async def validation_error_handler(
             {
                 "field": field_path,
                 "issue": error.get("msg", "Validation error"),
-                "rejectedValue": error.get("input") if "input" in error else None,
+                "rejected_value": error.get("input") if "input" in error else None,
             }
         )
 
@@ -75,11 +75,11 @@ async def validation_error_handler(
         **base_exception_body(request.url.path),
         "code": "VALIDATION_FAILED",
         "message": "Some fields do not pass validation",
-        "fieldErrors": field_errors,
+        "field_errors": field_errors,
     }
 
     return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=response
+        status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, content=response
     )
 
 
@@ -105,7 +105,7 @@ async def application_error_handler(
 
 def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router, tags=["auth"])
-    app.include_router(auth_router, tags=["auth"], prefix="/auth")
+    app.include_router(auth_router, tags=["auth"], prefix="/api/v1/auth")
 
 
 def include_exception_handlers(app: FastAPI) -> None:

@@ -18,7 +18,6 @@ class RegisterUserRequest(BaseModel):
     full_name: Annotated[
         str,
         Field(
-            alias="fullName",
             description="User full name",
             examples=["Ivan Ivanov"],
             max_length=200,
@@ -38,23 +37,18 @@ class RegisterUserRequest(BaseModel):
         int | None,
         Field(description="Age (minimum 18 years)", examples=[25], ge=18, le=120),
     ] = None
-    marital_status: Annotated[MaritalStatus | None, Field(alias="MaritalStatus")] = None
-
-    model_config = ConfigDict(populate_by_name=True)
+    marital_status: MaritalStatus | None = None
 
 
 class RegisterUserResponse(BaseModel):
     access_token: Annotated[
         str,
         Field(
-            alias="accessToken",
             description="JWT token for request authorization.\n",
             examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
         ),
     ]
     user: User
-
-    model_config = ConfigDict(populate_by_name=True)
 
 
 class LoginUserRequest(BaseModel):
@@ -66,12 +60,9 @@ class LoginUserResponse(BaseModel):
     access_token: Annotated[
         str,
         Field(
-            alias="accessToken",
             description="JWT token for request authorization.\n",
             examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
         ),
     ]
     expires_in: Annotated[int, Field(alias="expiresIn")]
     user: User
-
-    model_config = ConfigDict(populate_by_name=True)
