@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, SecretStr
+from pydantic import BaseModel, EmailStr, Field, SecretStr
 
 from prodik.domain.user import Gender, MaritalStatus, User
 

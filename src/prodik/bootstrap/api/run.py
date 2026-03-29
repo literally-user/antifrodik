@@ -38,8 +38,10 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     yield
     await app.state.dishka_container.close()
 
-def init_mapper():
+
+def init_mapper() -> None:
     start_mapper()
+
 
 def create_app(settings: Config) -> FastAPI:
     app = FastAPI(
@@ -70,7 +72,7 @@ def create_app(settings: Config) -> FastAPI:
 
 def run_http(_argv: list[str]) -> None:
     config = Config()
-    
+
     start_mapper()
     app = create_app(config)
 
