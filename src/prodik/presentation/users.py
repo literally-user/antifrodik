@@ -4,10 +4,10 @@ from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter
 
 from prodik.application.user.command import (
-    UpdateProfileInteractor,
-    UpdateProfileRequestDTO,
     CurrentUserUpdateProfileInteractor,
     CurrentUserUpdateProfileRequestDTO,
+    UpdateProfileInteractor,
+    UpdateProfileRequestDTO,
 )
 from prodik.application.user.moderation import DeactivateUserInteractor
 from prodik.application.user.query import (
@@ -36,7 +36,7 @@ async def update_current_user(
     update_current_user_request: UpdateCurrentUserRequest,
     update_current_user_interactor: FromDishka[CurrentUserUpdateProfileInteractor],
 ) -> User:
-    result = await update_current_user_interactor.execute(
+    return await update_current_user_interactor.execute(
         CurrentUserUpdateProfileRequestDTO(
             full_name=update_current_user_request.full_name,
             age=update_current_user_request.age,
@@ -48,7 +48,6 @@ async def update_current_user(
         )
     )
 
-    return result
 
 @router.put("/{target_id}")
 async def update_user(
@@ -56,7 +55,7 @@ async def update_user(
     update_user_request: UpdateCurrentUserRequest,
     update_user_interactor: FromDishka[UpdateProfileInteractor],
 ) -> User:
-    result = await update_user_interactor.execute(
+    return await update_user_interactor.execute(
         UpdateProfileRequestDTO(
             full_name=update_user_request.full_name,
             age=update_user_request.age,
@@ -68,8 +67,6 @@ async def update_user(
         ),
         target_id=target_id,
     )
-
-    return result
 
 
 @router.delete("/{target_id}", status_code=204)

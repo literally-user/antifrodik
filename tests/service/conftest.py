@@ -83,7 +83,7 @@ async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
 @pytest.fixture
 async def test_session(test_engine: AsyncEngine, test_commit_mock: mock.AsyncMock) -> AsyncGenerator[AsyncSession]:
     async with (AsyncSession(test_engine) as session, session.begin()):
-        session.commit = test_commit_mock
+        session.commit = test_commit_mock # type: ignore[method-assign]
         yield session
         await session.rollback()
 

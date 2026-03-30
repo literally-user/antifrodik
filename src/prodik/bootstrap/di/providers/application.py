@@ -1,10 +1,10 @@
 from dishka import Provider, Scope, provide_all
 
 from prodik.application.user.command import (
+    CurrentUserUpdateProfileInteractor,
     LoginUserInteractor,
     RegisterUserInteractor,
-    CurrentUserUpdateProfileInteractor,
-    UpdateProfileInteractor
+    UpdateProfileInteractor,
 )
 from prodik.application.user.moderation import (
     CreateUserInteractor,
