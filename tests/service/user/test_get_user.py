@@ -10,8 +10,6 @@ from tests.service.factories import UserWithCredentials, create_user_with_creden
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.domain.user import User
 
-# Написать тесты для админа который пытается получить себя/другого пользователя
-
 @pytest.mark.asyncio
 async def test_get_user_ok(test_client: AsyncClient, test_user_with_credentials: UserWithCredentials) -> None:
     auth_response = await test_client.post("/api/v1/auth/login", json={

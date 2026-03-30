@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from prodik.application.errors import NotEnoughRightsError, UserAlreadyExistsError
 from prodik.application.interfaces.identity_provider import IdentityProvider
+from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
     UserCredentialsRepository,
     UserRepository,
@@ -27,6 +28,7 @@ class CreateUserRequestDTO:
 @dataclass
 class CreateUserInteractor:
     identity_provider: IdentityProvider
+    password_hasher: PasswordHasher
     user_credentials_repository: UserCredentialsRepository
     user_repository: UserRepository
     uow: UoW
@@ -59,11 +61,11 @@ class CreateUserInteractor:
         user_credentials = UserCredentials(
             id=uuid4(),
             user_id=user_id,
-            hashed_password=request.password,
+            hashed_password=self.password_hasher.hash(request.password),
         )
 
-        await self.user_credentials_repository.create(user_credentials)
         await self.user_repository.create(user_model)
+        await self.user_credentials_repository.create(user_credentials)
         await self.uow.commit()
 
         return user_model

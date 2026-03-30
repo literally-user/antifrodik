@@ -9,7 +9,11 @@ from prodik.application.user.command import (
     UpdateProfileInteractor,
     UpdateProfileRequestDTO,
 )
-from prodik.application.user.moderation import DeactivateUserInteractor
+from prodik.application.user.moderation import (
+    CreateUserInteractor,
+    CreateUserRequestDTO,
+    DeactivateUserInteractor,
+)
 from prodik.application.user.query import (
     GetCurrentUserInteractor,
     GetUserInteractor,
@@ -17,6 +21,7 @@ from prodik.application.user.query import (
 )
 from prodik.domain.user import User
 from prodik.presentation.schemas.users import (
+    CreateUserRequest,
     GetUsersByOffsetResponse,
     UpdateCurrentUserRequest,
 )
@@ -95,4 +100,23 @@ async def get_users_by_offset(
         total=result.total,
         page=result.page,
         size=result.size,
+    )
+
+
+@router.post("/", status_code=201)
+async def create_user(
+    create_user_request: CreateUserRequest,
+    create_user_interactor: FromDishka[CreateUserInteractor],
+) -> User:
+    return await create_user_interactor.execute(
+        CreateUserRequestDTO(
+            email=create_user_request.email,
+            password=create_user_request.password.get_secret_value(),
+            full_name=create_user_request.full_name,
+            region=create_user_request.region,
+            gender=create_user_request.gender,
+            age=create_user_request.age,
+            marital_status=create_user_request.marital_status,
+            role=create_user_request.role,
+        )
     )
