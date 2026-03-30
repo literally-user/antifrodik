@@ -24,7 +24,7 @@ async def test_get_user_ok(test_client: AsyncClient, test_user_with_credentials:
     response = await test_client.get(
         f"/api/v1/users/{test_user_with_credentials.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -50,7 +50,7 @@ async def test_get_user_not_enough_permissions(
     response = await test_client.get(
         f"/api/v1/users/{target_user.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -83,7 +83,7 @@ async def test_get_user_not_found(
     response = await test_client.get(
         f"/api/v1/users/{random_uuid}",
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -121,7 +121,7 @@ async def test_get_user_by_admin(
     response = await test_client.get(
         f"/api/v1/users/{target_user.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -156,7 +156,7 @@ async def test_get_current_user_ok(
     response = await test_client.get(
         f"/api/v1/users/me",
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 

@@ -31,7 +31,7 @@ async def test_update_current_profile_ok(
             "marital_status": "SINGLE",
         },
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -73,7 +73,7 @@ async def test_update_current_profile_forbidden(
             "is_active": False,
         },
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -119,7 +119,7 @@ async def test_update_profile_by_admin(
             "is_active": False,
         },
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
@@ -170,7 +170,7 @@ async def test_update_admin_profile_by_admin(
             "is_active": False,
         },
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
