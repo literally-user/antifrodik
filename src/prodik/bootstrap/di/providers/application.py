@@ -1,9 +1,19 @@
 from dishka import Provider, Scope, provide_all
 
 from prodik.application.user.command import LoginUserInteractor, RegisterUserInteractor
+from prodik.application.user.query import (
+    GetCurrentUserInteractor,
+    GetUserInteractor,
+    GetUsersInteractor,
+)
 
 
 class ApplicationProvider(Provider):
     provides = provide_all(
-        RegisterUserInteractor, LoginUserInteractor, scope=Scope.REQUEST
+        RegisterUserInteractor,
+        LoginUserInteractor,
+        GetCurrentUserInteractor,
+        GetUsersInteractor,
+        GetUserInteractor,
+        scope=Scope.REQUEST,
     )
