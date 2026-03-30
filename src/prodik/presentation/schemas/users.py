@@ -14,10 +14,10 @@ class GetUsersByOffsetResponse(BaseModel):
 
 class UpdateCurrentUserRequest(BaseModel):
     full_name: Annotated[str, Field(max_length=200, min_length=2)]
-    region: Annotated[str, Field(max_length=32)]
-    gender: Gender
-    age: Annotated[int, Field(ge=18, le=120)]
-    marital_status: MaritalStatus
+    region: Annotated[str | None, Field(max_length=32)]
+    gender: Gender | None
+    age: Annotated[int | None, Field(ge=18, le=120)]
+    marital_status: MaritalStatus | None
     role: Annotated[
         Role | None,
         Field(description="Only ADMIN can change role. USER will get 403 on attempt."),
