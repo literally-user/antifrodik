@@ -20,19 +20,19 @@ from pydantic import (
 
 
 class ErrorCode(Enum):
-    BAD_REQUEST = 'BAD_REQUEST'
-    VALIDATION_FAILED = 'VALIDATION_FAILED'
-    UNAUTHORIZED = 'UNAUTHORIZED'
-    FORBIDDEN = 'FORBIDDEN'
-    NOT_FOUND = 'NOT_FOUND'
-    USER_NOT_FOUND = 'USER_NOT_FOUND'
-    EMAIL_ALREADY_EXISTS = 'EMAIL_ALREADY_EXISTS'
-    USER_INACTIVE = 'USER_INACTIVE'
-    DSL_PARSE_ERROR = 'DSL_PARSE_ERROR'
-    DSL_INVALID_FIELD = 'DSL_INVALID_FIELD'
-    DSL_INVALID_OPERATOR = 'DSL_INVALID_OPERATOR'
-    RULE_NAME_ALREADY_EXISTS = 'RULE_NAME_ALREADY_EXISTS'
-    INTERNAL_SERVER_ERROR = 'INTERNAL_SERVER_ERROR'
+    BAD_REQUEST = "BAD_REQUEST"
+    VALIDATION_FAILED = "VALIDATION_FAILED"
+    UNAUTHORIZED = "UNAUTHORIZED"
+    FORBIDDEN = "FORBIDDEN"
+    NOT_FOUND = "NOT_FOUND"
+    USER_NOT_FOUND = "USER_NOT_FOUND"
+    EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS"
+    USER_INACTIVE = "USER_INACTIVE"
+    DSL_PARSE_ERROR = "DSL_PARSE_ERROR"
+    DSL_INVALID_FIELD = "DSL_INVALID_FIELD"
+    DSL_INVALID_OPERATOR = "DSL_INVALID_OPERATOR"
+    RULE_NAME_ALREADY_EXISTS = "RULE_NAME_ALREADY_EXISTS"
+    INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR"
 
 
 class ApiError(BaseModel):
@@ -40,29 +40,29 @@ class ApiError(BaseModel):
     message: Annotated[
         str,
         Field(
-            description='Human-readable message (for display to user)',
-            examples=['Bad request'],
+            description="Human-readable message (for display to user)",
+            examples=["Bad request"],
         ),
     ]
     traceId: Annotated[
         UUID,
         Field(
-            description='Unique request identifier for tracing.\nUsed for searching in logs during debugging.\n',
-            examples=['[UUID73]'],
+            description="Unique request identifier for tracing.\nUsed for searching in logs during debugging.\n",
+            examples=["[UUID73]"],
         ),
     ]
     timestamp: Annotated[
-        AwareDatetime, Field(description='Error occurrence time (ISO 8601, UTC)')
+        AwareDatetime, Field(description="Error occurrence time (ISO 8601, UTC)")
     ]
     path: Annotated[
         str,
         Field(
-            description='Request path where error occurred',
-            examples=['/api/v1/transactions'],
+            description="Request path where error occurred",
+            examples=["/api/v1/transactions"],
         ),
     ]
     details: Annotated[
-        dict[str, Any] | None, Field(description='Additional error details')
+        dict[str, Any] | None, Field(description="Additional error details")
     ] = None
 
 
@@ -71,51 +71,51 @@ class FieldError(BaseModel):
         str,
         Field(
             description='Field name with error (can be nested, e.g. "location.latitude")',
-            examples=['amount'],
+            examples=["amount"],
         ),
     ]
     issue: Annotated[
-        str, Field(description='Problem description', examples=['must be >= 0.01'])
+        str, Field(description="Problem description", examples=["must be >= 0.01"])
     ]
     rejectedValue: Annotated[
-        Any | None, Field(description='Value that failed validation')
+        Any | None, Field(description="Value that failed validation")
     ] = None
 
 
 class UserRole(Enum):
-    ADMIN = 'ADMIN'
-    USER = 'USER'
+    ADMIN = "ADMIN"
+    USER = "USER"
 
 
 class Gender(Enum):
-    MALE = 'MALE'
-    FEMALE = 'FEMALE'
+    MALE = "MALE"
+    FEMALE = "FEMALE"
 
 
 class MaritalStatus(Enum):
-    SINGLE = 'SINGLE'
-    MARRIED = 'MARRIED'
-    DIVORCED = 'DIVORCED'
-    WIDOWED = 'WIDOWED'
+    SINGLE = "SINGLE"
+    MARRIED = "MARRIED"
+    DIVORCED = "DIVORCED"
+    WIDOWED = "WIDOWED"
 
 
 class TransactionStatus(Enum):
-    APPROVED = 'APPROVED'
-    DECLINED = 'DECLINED'
+    APPROVED = "APPROVED"
+    DECLINED = "DECLINED"
 
 
 class TransactionChannel(Enum):
-    WEB = 'WEB'
-    MOBILE = 'MOBILE'
-    POS = 'POS'
-    OTHER = 'OTHER'
+    WEB = "WEB"
+    MOBILE = "MOBILE"
+    POS = "POS"
+    OTHER = "OTHER"
 
 
 class CurrencyCode(RootModel[str]):
     root: Annotated[
         str,
         Field(
-            description='ISO 4217 currency code', examples=['RUB'], pattern='^[A-Z]{3}$'
+            description="ISO 4217 currency code", examples=["RUB"], pattern="^[A-Z]{3}$"
         ),
     ]
 
@@ -124,9 +124,9 @@ class MccCode(RootModel[str]):
     root: Annotated[
         str,
         Field(
-            description='Merchant Category Code (4 digits)',
-            examples=['5411'],
-            pattern='^\\d{4}$',
+            description="Merchant Category Code (4 digits)",
+            examples=["5411"],
+            pattern="^\\d{4}$",
         ),
     ]
 
@@ -135,21 +135,21 @@ class RegisterRequest(BaseModel):
     model_config = ConfigDict(
         regex_engine="python-re",
     )
-    email: Annotated[EmailStr, Field(description='User email (unique)', max_length=254)]
+    email: Annotated[EmailStr, Field(description="User email (unique)", max_length=254)]
     password: Annotated[
         SecretStr,
         Field(
-            description='Password. Requirements:\n- Minimum 8 characters\n- Minimum 1 letter (A-Z or a-z)\n- Minimum 1 digit (0-9)\n',
+            description="Password. Requirements:\n- Minimum 8 characters\n- Minimum 1 letter (A-Z or a-z)\n- Minimum 1 digit (0-9)\n",
             max_length=72,
             min_length=8,
-            pattern='^(?=.*[A-Za-z])(?=.*\\d).+$',
+            pattern="^(?=.*[A-Za-z])(?=.*\\d).+$",
         ),
     ]
     fullName: Annotated[
         str,
         Field(
-            description='User full name',
-            examples=['Ivan Ivanov'],
+            description="User full name",
+            examples=["Ivan Ivanov"],
             max_length=200,
             min_length=2,
         ),
@@ -157,15 +157,15 @@ class RegisterRequest(BaseModel):
     region: Annotated[
         str | None,
         Field(
-            description='User region (region code or arbitrary string)',
-            examples=['RU-MOW'],
+            description="User region (region code or arbitrary string)",
+            examples=["RU-MOW"],
             max_length=32,
         ),
     ] = None
     gender: Gender | None = None
     age: Annotated[
         int | None,
-        Field(description='Age (minimum 18 years)', examples=[25], ge=18, le=120),
+        Field(description="Age (minimum 18 years)", examples=[25], ge=18, le=120),
     ] = None
     maritalStatus: MaritalStatus | None = None
 
@@ -180,7 +180,7 @@ class User(BaseModel):
     email: Annotated[EmailStr, Field(max_length=254)]
     fullName: Annotated[str, Field(max_length=200, min_length=2)]
     region: Annotated[
-        str | None, Field(description='Residence region', max_length=32)
+        str | None, Field(description="Residence region", max_length=32)
     ] = None
     gender: Gender | None = None
     age: Annotated[int | None, Field(ge=18, le=120)] = None
@@ -188,7 +188,7 @@ class User(BaseModel):
     role: UserRole
     isActive: Annotated[
         bool,
-        Field(description='Whether user is active (deactivated users cannot log in)'),
+        Field(description="Whether user is active (deactivated users cannot log in)"),
     ]
     createdAt: AwareDatetime
     updatedAt: AwareDatetime
@@ -201,7 +201,7 @@ class UserCreateRequest(BaseModel):
     email: Annotated[EmailStr, Field(max_length=254)]
     password: Annotated[
         SecretStr,
-        Field(max_length=72, min_length=8, pattern='^(?=.*[A-Za-z])(?=.*\\d).+$'),
+        Field(max_length=72, min_length=8, pattern="^(?=.*[A-Za-z])(?=.*\\d).+$"),
     ]
     fullName: Annotated[str, Field(max_length=200, min_length=2)]
     region: Annotated[str | None, Field(max_length=32)] = None
@@ -219,38 +219,38 @@ class UserUpdateRequest(BaseModel):
     maritalStatus: MaritalStatus
     role: Annotated[
         UserRole | None,
-        Field(description='Only ADMIN can change role. USER will get 403 on attempt.'),
+        Field(description="Only ADMIN can change role. USER will get 403 on attempt."),
     ] = None
     isActive: Annotated[
-        bool | None, Field(description='Only ADMIN can change isActive.')
+        bool | None, Field(description="Only ADMIN can change isActive.")
     ] = None
 
 
 class PagedUsers(BaseModel):
     items: list[User]
-    total: Annotated[int, Field(description='Total number of records', ge=0)]
-    page: Annotated[int, Field(description='Current page (0-based)', ge=0)]
-    size: Annotated[int, Field(description='Page size', ge=1)]
+    total: Annotated[int, Field(description="Total number of records", ge=0)]
+    page: Annotated[int, Field(description="Current page (0-based)", ge=0)]
+    size: Annotated[int, Field(description="Page size", ge=1)]
 
 
 class TransactionLocation(BaseModel):
     country: Annotated[
         str | None,
         Field(
-            description='ISO 3166-1 alpha-2 country code (uppercase letters)',
-            examples=['RU'],
+            description="ISO 3166-1 alpha-2 country code (uppercase letters)",
+            examples=["RU"],
             max_length=2,
             min_length=2,
-            pattern='^[A-Z]{2}$',
+            pattern="^[A-Z]{2}$",
         ),
     ] = None
     city: Annotated[
-        str | None, Field(description='City name', examples=['Moscow'], max_length=128)
+        str | None, Field(description="City name", examples=["Moscow"], max_length=128)
     ] = None
     latitude: Annotated[
         float | None,
         Field(
-            description='Latitude (requires longitude)',
+            description="Latitude (requires longitude)",
             examples=[55.7558],
             ge=-90.0,
             le=90.0,
@@ -259,7 +259,7 @@ class TransactionLocation(BaseModel):
     longitude: Annotated[
         float | None,
         Field(
-            description='Longitude (requires latitude)',
+            description="Longitude (requires latitude)",
             examples=[37.6173],
             ge=-180.0,
             le=180.0,
@@ -273,7 +273,7 @@ class Transaction(BaseModel):
     amount: Annotated[
         float,
         Field(
-            description='Transaction amount',
+            description="Transaction amount",
             examples=[1999.99],
             ge=0.01,
             le=999999999.99,
@@ -283,33 +283,33 @@ class Transaction(BaseModel):
     status: TransactionStatus
     merchantId: Annotated[
         str | None,
-        Field(description='Merchant identifier', examples=['shop-123'], max_length=64),
+        Field(description="Merchant identifier", examples=["shop-123"], max_length=64),
     ] = None
     merchantCategoryCode: MccCode | None = None
     timestamp: Annotated[
-        AwareDatetime, Field(description='Operation time (specified by client)')
+        AwareDatetime, Field(description="Operation time (specified by client)")
     ]
     ipAddress: Annotated[
         str | None,
-        Field(description='Client IP address', examples=['192.168.0.1'], max_length=64),
+        Field(description="Client IP address", examples=["192.168.0.1"], max_length=64),
     ] = None
     deviceId: Annotated[
         str | None,
-        Field(description='Device identifier', examples=['device-abc'], max_length=128),
+        Field(description="Device identifier", examples=["device-abc"], max_length=128),
     ] = None
     channel: TransactionChannel | None = None
     location: TransactionLocation | None = None
     isFraud: Annotated[
         bool,
         Field(
-            description='Flag indicating transaction is marked as fraud (at least one rule triggered)'
+            description="Flag indicating transaction is marked as fraud (at least one rule triggered)"
         ),
     ]
     metadata: Annotated[
-        dict[str, Any] | None, Field(description='Arbitrary additional data')
+        dict[str, Any] | None, Field(description="Arbitrary additional data")
     ] = None
     createdAt: Annotated[
-        AwareDatetime, Field(description='Record creation time in the system')
+        AwareDatetime, Field(description="Record creation time in the system")
     ]
 
 
@@ -317,7 +317,7 @@ class TransactionCreateRequest(BaseModel):
     userId: Annotated[
         UUID,
         Field(
-            description='ID of user for whom transaction is created.\nUSER can create only for themselves (userId == id from token).\nADMIN can create for any user.\n'
+            description="ID of user for whom transaction is created.\nUSER can create only for themselves (userId == id from token).\nADMIN can create for any user.\n"
         ),
     ]
     amount: Annotated[float, Field(ge=0.01, le=999999999.99)]
@@ -327,7 +327,7 @@ class TransactionCreateRequest(BaseModel):
     timestamp: Annotated[
         AwareDatetime,
         Field(
-            description='Operation time. Must not be too far in the future (> now + 5 minutes => 422).\n'
+            description="Operation time. Must not be too far in the future (> now + 5 minutes => 422).\n"
         ),
     ]
     ipAddress: Annotated[str | None, Field(max_length=64)] = None
@@ -341,7 +341,7 @@ class TransactionBatchCreateRequest(BaseModel):
     items: Annotated[
         list[TransactionCreateRequest],
         Field(
-            description='Array of transactions for batch creation',
+            description="Array of transactions for batch creation",
             max_length=500,
             min_length=1,
         ),
@@ -354,10 +354,10 @@ class FraudRuleEvaluationResult(BaseModel):
     priority: Annotated[int, Field(ge=1)]
     enabled: bool
     matched: Annotated[
-        bool, Field(description='true if rule triggered (condition met)')
+        bool, Field(description="true if rule triggered (condition met)")
     ]
     description: Annotated[
-        str | None, Field(description='Human-readable description of check result')
+        str | None, Field(description="Human-readable description of check result")
     ] = None
 
 
@@ -366,7 +366,7 @@ class TransactionDecision(BaseModel):
     ruleResults: Annotated[
         list[FraudRuleEvaluationResult],
         Field(
-            description='Results of applying all enabled rules at the time of check.\nAll rules are returned (both triggered and not triggered).\n'
+            description="Results of applying all enabled rules at the time of check.\nAll rules are returned (both triggered and not triggered).\n"
         ),
     ]
 
@@ -380,16 +380,16 @@ class PagedTransactions(BaseModel):
 
 class TransactionBatchResultItem(BaseModel):
     index: Annotated[
-        int, Field(description='Element index in original array (0-based)', ge=0)
+        int, Field(description="Element index in original array (0-based)", ge=0)
     ]
     decision: Annotated[
         TransactionDecision | None,
-        Field(description='Result if transaction successfully processed'),
+        Field(description="Result if transaction successfully processed"),
     ] = None
     error: Annotated[
         ApiError | None,
         Field(
-            description='Error if element not processed (validation/access/conflict)'
+            description="Error if element not processed (validation/access/conflict)"
         ),
     ] = None
 
@@ -401,11 +401,11 @@ class TransactionBatchResult(BaseModel):
 class FraudRule(BaseModel):
     id: UUID
     name: Annotated[
-        str, Field(description='Unique rule name', max_length=120, min_length=3)
+        str, Field(description="Unique rule name", max_length=120, min_length=3)
     ]
     description: Annotated[
         str | None,
-        Field(description='Rule description (for documentation)', max_length=500),
+        Field(description="Rule description (for documentation)", max_length=500),
     ] = None
     dslExpression: Annotated[
         str,
@@ -417,12 +417,12 @@ class FraudRule(BaseModel):
     ]
     enabled: Annotated[
         bool,
-        Field(description='Whether rule is active (inactive rules are not applied)'),
+        Field(description="Whether rule is active (inactive rules are not applied)"),
     ]
     priority: Annotated[
         int,
         Field(
-            description='Priority (lower number = higher priority, checked earlier)',
+            description="Priority (lower number = higher priority, checked earlier)",
             ge=1,
         ),
     ]
@@ -451,58 +451,58 @@ class DslValidateRequest(BaseModel):
 
 
 class DslError(BaseModel):
-    code: Annotated[str, Field(examples=['DSL_PARSE_ERROR'])]
+    code: Annotated[str, Field(examples=["DSL_PARSE_ERROR"])]
     message: str
     position: Annotated[
-        int | None, Field(description='Error position in expression (0-based)')
+        int | None, Field(description="Error position in expression (0-based)")
     ] = None
     near: Annotated[
-        str | None, Field(description='Expression fragment near the error')
+        str | None, Field(description="Expression fragment near the error")
     ] = None
 
 
 class MerchantRiskRow(BaseModel):
     merchantId: str
     merchantCategoryCode: MccCode | None = None
-    txCount: Annotated[int, Field(description='Number of transactions', ge=0)]
+    txCount: Annotated[int, Field(description="Number of transactions", ge=0)]
     gmv: Annotated[float | None, Field(ge=0.0)] = None
     declineRate: Annotated[
-        float, Field(description='Share of declined transactions', ge=0.0, le=1.0)
+        float, Field(description="Share of declined transactions", ge=0.0, le=1.0)
     ]
 
 
 class TransactionsTimePoint(BaseModel):
     bucketStart: Annotated[
-        AwareDatetime, Field(description='Time interval (bucket) start')
+        AwareDatetime, Field(description="Time interval (bucket) start")
     ]
     txCount: Annotated[
-        int, Field(description='Number of transactions in interval', ge=0)
+        int, Field(description="Number of transactions in interval", ge=0)
     ]
-    gmv: Annotated[float, Field(description='Sum of transactions in interval', ge=0.0)]
+    gmv: Annotated[float, Field(description="Sum of transactions in interval", ge=0.0)]
     approvalRate: Annotated[
         float,
-        Field(description='Share of APPROVED transactions (0..1)', ge=0.0, le=1.0),
+        Field(description="Share of APPROVED transactions (0..1)", ge=0.0, le=1.0),
     ]
     declineRate: Annotated[
         float,
-        Field(description='Share of DECLINED transactions (0..1)', ge=0.0, le=1.0),
+        Field(description="Share of DECLINED transactions (0..1)", ge=0.0, le=1.0),
     ]
 
 
 class RuleMatchRow(BaseModel):
     ruleId: UUID
     ruleName: str
-    matches: Annotated[int, Field(description='Number of rule triggers', ge=0)]
+    matches: Annotated[int, Field(description="Number of rule triggers", ge=0)]
     uniqueUsers: Annotated[
-        int, Field(description='Unique users affected by rule', ge=0)
+        int, Field(description="Unique users affected by rule", ge=0)
     ]
     uniqueMerchants: Annotated[
-        int | None, Field(description='Unique merchants affected by rule', ge=0)
+        int | None, Field(description="Unique merchants affected by rule", ge=0)
     ] = None
     shareOfDeclines: Annotated[
         float,
         Field(
-            description='Share of DECLINED transactions where this rule was among matched',
+            description="Share of DECLINED transactions where this rule was among matched",
             ge=0.0,
             le=1.0,
         ),
@@ -516,33 +516,33 @@ class MerchantRiskStats(BaseModel):
 class UserRiskProfile(BaseModel):
     userId: UUID
     txCount_24h: Annotated[
-        int, Field(description='Number of transactions in last 24 hours', ge=0)
+        int, Field(description="Number of transactions in last 24 hours", ge=0)
     ]
     gmv_24h: Annotated[
-        float, Field(description='Sum of transactions in last 24 hours', ge=0.0)
+        float, Field(description="Sum of transactions in last 24 hours", ge=0.0)
     ]
     distinctDevices_24h: Annotated[
-        int, Field(description='Unique devices in last 24 hours', ge=0)
+        int, Field(description="Unique devices in last 24 hours", ge=0)
     ]
     distinctIps_24h: Annotated[
-        int, Field(description='Unique IP addresses in last 24 hours', ge=0)
+        int, Field(description="Unique IP addresses in last 24 hours", ge=0)
     ]
     distinctCities_24h: Annotated[
-        int, Field(description='Unique cities in last 24 hours', ge=0)
+        int, Field(description="Unique cities in last 24 hours", ge=0)
     ]
     declineRate_30d: Annotated[
         float,
         Field(
-            description='Share of declined transactions in last 30 days', ge=0.0, le=1.0
+            description="Share of declined transactions in last 30 days", ge=0.0, le=1.0
         ),
     ]
     lastSeenAt: Annotated[
-        AwareDatetime | None, Field(description='Last activity time')
+        AwareDatetime | None, Field(description="Last activity time")
     ] = None
 
 
 class ValidationError(BaseModel):
-    code: Annotated[str, Field(examples=['VALIDATION_FAILED'])]
+    code: Annotated[str, Field(examples=["VALIDATION_FAILED"])]
     message: str
     traceId: UUID
     timestamp: AwareDatetime
@@ -554,14 +554,14 @@ class AuthResponse(BaseModel):
     accessToken: Annotated[
         str,
         Field(
-            description='JWT token for request authorization.\nPass in header: Authorization: Bearer <token>\n',
-            examples=['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'],
+            description="JWT token for request authorization.\nPass in header: Authorization: Bearer <token>\n",
+            examples=["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."],
         ),
     ]
     expiresIn: Annotated[
         int,
         Field(
-            description='Token lifetime in seconds.\nAfter expiration, token becomes invalid and a new one must be obtained via /auth/login.\n',
+            description="Token lifetime in seconds.\nAfter expiration, token becomes invalid and a new one must be obtained via /auth/login.\n",
             examples=[3600],
             ge=1,
         ),
@@ -572,30 +572,30 @@ class AuthResponse(BaseModel):
 class DslValidateResponse(BaseModel):
     isValid: bool
     normalizedExpression: Annotated[
-        str | None, Field(description='Normalized expression (if valid)')
+        str | None, Field(description="Normalized expression (if valid)")
     ] = None
     errors: list[DslError]
 
 
 class StatsOverview(BaseModel):
     from_: Annotated[
-        AwareDatetime, Field(alias='from', description='Period start (inclusive)')
+        AwareDatetime, Field(alias="from", description="Period start (inclusive)")
     ]
-    to: Annotated[AwareDatetime, Field(description='Period end (exclusive)')]
+    to: Annotated[AwareDatetime, Field(description="Period end (exclusive)")]
     volume: Annotated[
-        int, Field(description='Total number of transactions for the period', ge=0)
+        int, Field(description="Total number of transactions for the period", ge=0)
     ]
     gmv: Annotated[
         float,
         Field(
-            description='Gross Merchandise Value — sum of amount of all transactions.\nIncludes both APPROVED and DECLINED transactions.\n',
+            description="Gross Merchandise Value — sum of amount of all transactions.\nIncludes both APPROVED and DECLINED transactions.\n",
             ge=0.0,
         ),
     ]
     approvalRate: Annotated[
         float,
         Field(
-            description='Share of APPROVED transactions (0..1).\napprovalRate + declineRate = 1\n',
+            description="Share of APPROVED transactions (0..1).\napprovalRate + declineRate = 1\n",
             ge=0.0,
             le=1.0,
         ),
@@ -603,14 +603,14 @@ class StatsOverview(BaseModel):
     declineRate: Annotated[
         float,
         Field(
-            description='Share of DECLINED transactions (0..1).\nEquivalent to share of transactions with isFraud=true.\n',
+            description="Share of DECLINED transactions (0..1).\nEquivalent to share of transactions with isFraud=true.\n",
             ge=0.0,
             le=1.0,
         ),
     ]
     topRiskMerchants: Annotated[
         list[MerchantRiskRow],
-        Field(description='Top 10 merchants with highest declineRate'),
+        Field(description="Top 10 merchants with highest declineRate"),
     ]
 
 

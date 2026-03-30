@@ -3,15 +3,41 @@ from uuid import UUID
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 from fastapi import APIRouter
 
-from prodik.application.user.query import GetUserInteractor, GetCurrentUserInteractor, GetUsersInteractor
-from prodik.presentation.schemas.users import GetUsersByOffsetResponse
+from prodik.application.user.command import (
+    UpdateProfileInteractor,
+    UpdateProfileRequestDTO,
+    CurrentUserUpdateProfileInteractor,
+    CurrentUserUpdateProfileRequestDTO,
+)
+from prodik.application.user.moderation import DeactivateUserInteractor
+from prodik.application.user.query import (
+    GetCurrentUserInteractor,
+    GetUserInteractor,
+    GetUsersInteractor,
+)
 from prodik.domain.user import User
+from prodik.presentation.schemas.users import (
+    GetUsersByOffsetResponse,
+    UpdateCurrentUserRequest,
+)
 
 router = APIRouter(route_class=DishkaRoute)
 
+
 @router.get("/me")
-async def get_current_user(get_current_user_interactor: FromDishka[GetCurrentUserInteractor]) -> User:
+async def get_current_user(
+    get_current_user_interactor: FromDishka[GetCurrentUserInteractor],
+) -> User:
     return await get_current_user_interactor.execute()
+
+
+
+@router.delete("/{target_id}", status_code=204)
+async def deactivate_user(
+    target_id: UUID, deactivate_user_interactor: FromDishka[DeactivateUserInteractor]
+) -> None:
+    await deactivate_user_interactor.execute(target_id)
+
 
 @router.get("/{target_id}")
 async def get_user(
@@ -19,9 +45,12 @@ async def get_user(
 ) -> User:
     return await get_user_interactor.execute(target_id)
 
+
 @router.get("/")
 async def get_users_by_offset(
-    page: int, size: int, get_users_interactor: FromDishka[GetUsersInteractor],
+    page: int,
+    size: int,
+    get_users_interactor: FromDishka[GetUsersInteractor],
 ) -> GetUsersByOffsetResponse:
     result = await get_users_interactor.execute(page, size)
     return GetUsersByOffsetResponse(
