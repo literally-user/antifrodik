@@ -8,13 +8,16 @@ from fastapi.responses import JSONResponse
 
 from prodik.application.errors import (
     ApplicationError,
+    InvalidTokenError,
     NotEnoughRightsError,
     UserAlreadyExistsError,
     UserDeactivatedError,
+    UserNotFoundError,
     WrongCredentialsError,
 )
 from prodik.presentation.auth import router as auth_router
 from prodik.presentation.root import router as root_router
+from prodik.presentation.users import router as users_router
 
 
 class ExceptionMeta(TypedDict):
@@ -40,6 +43,14 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     UserAlreadyExistsError: {
         "status": status.HTTP_409_CONFLICT,
         "exception": "EMAIL_ALREADY_EXISTS",
+    },
+    InvalidTokenError: {
+        "status": status.HTTP_401_UNAUTHORIZED,
+        "exception": "UNAUTHORIZED",
+    },
+    UserNotFoundError: {
+        "status": status.HTTP_404_NOT_FOUND,
+        "exception": "NOT_FOUND",
     },
     NotEnoughRightsError: {
         "status": status.HTTP_403_FORBIDDEN,
@@ -106,6 +117,7 @@ async def application_error_handler(
 def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router, tags=["auth"])
     app.include_router(auth_router, tags=["auth"], prefix="/api/v1/auth")
+    app.include_router(users_router, tags=["users"], prefix="/api/v1/users")
 
 
 def include_exception_handlers(app: FastAPI) -> None:

@@ -1,4 +1,5 @@
 import os
+from unittest import mock
 from threading import Thread
 from collections.abc import AsyncGenerator
 
@@ -57,6 +58,10 @@ async def test_user_with_credentials(
 
     return user_with_credentials
 
+@pytest.fixture
+def test_commit_mock() -> mock.AsyncMock:
+    return mock.AsyncMock()
+
 @pytest.fixture(scope="session")
 async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
     engine = create_async_engine(config.database_config.url)
@@ -76,8 +81,9 @@ async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
     await engine.dispose()
 
 @pytest.fixture
-async def test_session(test_engine: AsyncEngine) -> AsyncGenerator[AsyncSession]:
+async def test_session(test_engine: AsyncEngine, test_commit_mock: mock.AsyncMock) -> AsyncGenerator[AsyncSession]:
     async with (AsyncSession(test_engine) as session, session.begin()):
+        session.commit = test_commit_mock # type: ignore[method-assign]
         yield session
         await session.rollback()
 

@@ -50,7 +50,7 @@ class UpdateProfileInteractor:
         if request.is_active is not None:
             target_user.set_active_status(is_active=request.is_active)
 
-        await self.user_repository.update(current_user)
+        await self.user_repository.update(target_user)
         await self.uow.commit()
 
-        return current_user
+        return target_user
