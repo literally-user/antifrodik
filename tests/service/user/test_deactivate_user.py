@@ -33,7 +33,7 @@ async def test_deactivate_user_ok(
     response = await test_client.delete(
         f"/api/v1/users/{target_user.user.id}",
         headers={
-            "Authorization": f"Bearer {auth_content.get("access_token")}"
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
         }
     )
 
