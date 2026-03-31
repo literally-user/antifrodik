@@ -12,6 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import registry
 
+from prodik.domain.fraud import FraudRule
 from prodik.domain.user import Gender, MaritalStatus, Role, User, UserCredentials
 
 metadata = MetaData()
@@ -43,6 +44,21 @@ user_credentials_table = Table(
 )
 
 
+fraud_rule_table = Table(
+    "fraud_rule_table",
+    metadata,
+    Column("id", UUID, primary_key=True, nullable=False),
+    Column("name", String, nullable=False),
+    Column("description", String, nullable=False),
+    Column("dsl_expression", String, nullable=False),
+    Column("enabled", Boolean, nullable=False),
+    Column("priority", nullable=False, default=1),
+    Column("created_at", DateTime(timezone=True)),
+    Column("updated_at", DateTime(timezone=True)),
+)
+
+
 def start_mapper() -> None:
+    registry_mapper.map_imperatively(FraudRule, fraud_rule_table)
     registry_mapper.map_imperatively(User, user_account_table)
     registry_mapper.map_imperatively(UserCredentials, user_credentials_table)
