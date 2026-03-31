@@ -10,6 +10,8 @@ from prodik.application.errors import (
     ApplicationError,
     InvalidTokenError,
     NotEnoughRightsError,
+    RuleAlreadyExistsError,
+    RuleNotFoundError,
     UserAlreadyExistsError,
     UserDeactivatedError,
     UserNotFoundError,
@@ -43,6 +45,14 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     UserAlreadyExistsError: {
         "status": status.HTTP_409_CONFLICT,
         "exception": "EMAIL_ALREADY_EXISTS",
+    },
+    RuleNotFoundError: {
+        "status": status.HTTP_404_NOT_FOUND,
+        "exception": "RULE_NOT_FOUND",
+    },
+    RuleAlreadyExistsError: {
+        "status": status.HTTP_409_CONFLICT,
+        "exception": "RULE_ALREADY_EXISTS",
     },
     InvalidTokenError: {
         "status": status.HTTP_401_UNAUTHORIZED,
