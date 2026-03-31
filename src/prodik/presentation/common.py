@@ -18,6 +18,7 @@ from prodik.application.errors import (
     WrongCredentialsError,
 )
 from prodik.presentation.auth import router as auth_router
+from prodik.presentation.fraud import router as fraud_router
 from prodik.presentation.root import router as root_router
 from prodik.presentation.users import router as users_router
 
@@ -128,6 +129,7 @@ def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router, tags=["auth"])
     app.include_router(auth_router, tags=["auth"], prefix="/api/v1/auth")
     app.include_router(users_router, tags=["users"], prefix="/api/v1/users")
+    app.include_router(fraud_router, tags=["fraud-rules"], prefix="/api/v1/fraud-rules")
 
 
 def include_exception_handlers(app: FastAPI) -> None:
