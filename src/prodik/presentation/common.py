@@ -10,12 +10,15 @@ from prodik.application.errors import (
     ApplicationError,
     InvalidTokenError,
     NotEnoughRightsError,
+    RuleAlreadyExistsError,
+    RuleNotFoundError,
     UserAlreadyExistsError,
     UserDeactivatedError,
     UserNotFoundError,
     WrongCredentialsError,
 )
 from prodik.presentation.auth import router as auth_router
+from prodik.presentation.fraud import router as fraud_router
 from prodik.presentation.root import router as root_router
 from prodik.presentation.users import router as users_router
 
@@ -43,6 +46,14 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     UserAlreadyExistsError: {
         "status": status.HTTP_409_CONFLICT,
         "exception": "EMAIL_ALREADY_EXISTS",
+    },
+    RuleNotFoundError: {
+        "status": status.HTTP_404_NOT_FOUND,
+        "exception": "RULE_NOT_FOUND",
+    },
+    RuleAlreadyExistsError: {
+        "status": status.HTTP_409_CONFLICT,
+        "exception": "RULE_ALREADY_EXISTS",
     },
     InvalidTokenError: {
         "status": status.HTTP_401_UNAUTHORIZED,
@@ -118,6 +129,7 @@ def include_handlers(app: FastAPI) -> None:
     app.include_router(root_router, tags=["auth"])
     app.include_router(auth_router, tags=["auth"], prefix="/api/v1/auth")
     app.include_router(users_router, tags=["users"], prefix="/api/v1/users")
+    app.include_router(fraud_router, tags=["fraud-rules"], prefix="/api/v1/fraud-rules")
 
 
 def include_exception_handlers(app: FastAPI) -> None:

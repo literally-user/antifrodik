@@ -60,6 +60,9 @@ class User:
     def deactivate(self) -> None:
         self.is_active = False
 
+    def can_manage_fraud_rules(self) -> bool:
+        return self.role == Role.ADMIN
+
     def can_manage_users(self) -> bool:
         return self.role == Role.ADMIN
 
