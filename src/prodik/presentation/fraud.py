@@ -7,6 +7,8 @@ from fastapi import APIRouter, Body
 from prodik.application.fraud.command import (
     CreateFraudRuleInteractor,
     CreateFraudRuleRequestDTO,
+    UpdateFraudRuleInteractor,
+    UpdateFraudRuleRequestDTO,
     ValidateRuleInteractor,
 )
 from prodik.application.fraud.query import (
@@ -16,6 +18,7 @@ from prodik.application.fraud.query import (
 from prodik.domain.fraud import FraudRule
 from prodik.presentation.schemas.fraud import (
     CreateFraudRuleRequest,
+    UpdateFraudRuleRequest,
     ValidateDslExpressionResponse,
 )
 
@@ -35,6 +38,25 @@ async def get_fraud_rule(
     get_fraud_rule_interactor: FromDishka[GetFraudRuleInteractor],
 ) -> FraudRule:
     return await get_fraud_rule_interactor.execute(target_id)
+
+
+@router.put("/{target_id}")
+async def update_fraud_rule(
+    target_id: UUID,
+    update_fraud_rule_request: UpdateFraudRuleRequest,
+    update_fraud_rule_interactor: FromDishka[UpdateFraudRuleInteractor],
+) -> FraudRule:
+    return await update_fraud_rule_interactor.execute(
+        UpdateFraudRuleRequestDTO(
+            name=update_fraud_rule_request.name,
+            description=update_fraud_rule_request.description,
+            dsl_expression=update_fraud_rule_request.dsl_expression,
+            enabled=update_fraud_rule_request.enabled,
+            priority=update_fraud_rule_request.priority,
+        ),
+        target_id,
+    )
+
 
 @router.post("/")
 async def create_fraud_rule(
