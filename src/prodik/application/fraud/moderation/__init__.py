@@ -1,6 +1,3 @@
-from ..command.create import CreateFraudRuleInteractor, CreateFraudRuleRequestDTO
+from .deactivate import DeactivateFraudRuleInteractor
 
-__all__ = (
-    "CreateFraudRuleInteractor",
-    "CreateFraudRuleRequestDTO",
-)
+__all__ = ("DeactivateFraudRuleInteractor",)
