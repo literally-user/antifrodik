@@ -1,11 +1,12 @@
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Body
 from dishka.integrations.fastapi import DishkaRoute, FromDishka
 
 from prodik.domain.fraud import FraudRule
 from prodik.presentation.schemas.fraud import CreateFraudRuleRequest, ValidateDslExpressionResponse
-from prodik.application.fraud.query import GetAllFraudRulesInteractor
+from prodik.application.fraud.query import GetAllFraudRulesInteractor, GetFraudRuleInteractor
 from prodik.application.fraud.command import CreateFraudRuleInteractor, CreateFraudRuleRequestDTO, ValidateRuleInteractor
 
 router = APIRouter(route_class=DishkaRoute)
@@ -15,6 +16,14 @@ async def get_all_rules(
     get_all_fraud_rules_interactor: FromDishka[GetAllFraudRulesInteractor],
 ) -> list[FraudRule]:
     return await get_all_fraud_rules_interactor.execute()
+
+@router.get("/{target_id}")
+async def get_fraud_rule(
+    target_id: UUID,
+    get_fraud_rule_interactor: FromDishka[GetFraudRuleInteractor],
+) -> FraudRule:
+    return await get_fraud_rule_interactor.execute(target_id)
+
 
 @router.post("/")
 async def create_fraud_rule(
