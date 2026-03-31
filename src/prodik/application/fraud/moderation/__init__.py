@@ -1,4 +1,4 @@
-from .create import CreateFraudRuleInteractor, CreateFraudRuleRequestDTO
+from ..command.create import CreateFraudRuleInteractor, CreateFraudRuleRequestDTO
 
 __all__ = (
     "CreateFraudRuleInteractor",
