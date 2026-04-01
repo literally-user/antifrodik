@@ -18,8 +18,9 @@ from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.api import create_app
 from prodik.infrastructure.config import Config, DatabaseConfig, SecretConfig
 from prodik.infrastructure.db.registry import start_mapper
+from prodik.domain.fraud import FraudRule
 
-from tests.service.factories import UserWithCredentials, create_user_with_credentials
+from tests.service.factories import UserWithCredentials, create_user_with_credentials, create_antifraud_rule
 
 TEST_CONFIG: dict[str, dict[str, str | int]] = {
     "api_config": {
@@ -57,6 +58,10 @@ async def test_user_with_credentials(
     user_with_credentials = await create_user_with_credentials(test_session, faker, test_password_hasher)
 
     return user_with_credentials
+
+@pytest.fixture
+async def test_fraud_rule(test_session: AsyncSession, faker: Faker) -> FraudRule:
+    return await create_antifraud_rule(test_session, faker)
 
 @pytest.fixture
 def test_commit_mock() -> mock.AsyncMock:

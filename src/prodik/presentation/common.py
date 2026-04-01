@@ -54,7 +54,7 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     },
     RuleNotFoundError: {
         "status": status.HTTP_404_NOT_FOUND,
-        "exception": "RULE_NOT_FOUND",
+        "exception": "NOT_FOUND",
     },
     RuleAlreadyExistsError: {
         "status": status.HTTP_409_CONFLICT,

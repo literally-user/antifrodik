@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.domain.user import User, Role, Gender, MaritalStatus, UserCredentials
+from prodik.domain.fraud import FraudRule
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -15,6 +16,37 @@ class UserWithCredentials:
     user: User
     credentials: UserCredentials
     password: str
+
+async def create_antifraud_rule(
+    test_session: AsyncSession,
+    faker: Faker,
+) -> FraudRule:
+    now = datetime.now(tz=UTC)
+
+    fraud_rule = FraudRule(
+        id=uuid4(),
+        name=faker.domain_name(),
+        description=None,
+        dsl_expression="amount > 10000 AND user.age < 21",
+        enabled=True,
+        priority=1,
+        created_at=now,
+        updated_at=now,
+    )
+
+    await test_session.execute(insert(FraudRule).values(
+        id=fraud_rule.id,
+        name=fraud_rule.name,
+        description=fraud_rule.description,
+        dsl_expression=fraud_rule.dsl_expression,
+        enabled=fraud_rule.enabled,
+        priority=fraud_rule.priority,
+        created_at=fraud_rule.created_at,
+        updated_at=fraud_rule.updated_at,
+    ))
+
+    return fraud_rule
+
 
 async def create_user_with_credentials(
     test_session: AsyncSession,
