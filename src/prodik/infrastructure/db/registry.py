@@ -52,7 +52,7 @@ fraud_rule_table = Table(
     Column("description", String, nullable=False),
     Column("dsl_expression", String, nullable=False),
     Column("enabled", Boolean, nullable=False),
-    Column("priority", nullable=False, default=1),
+    Column("priority", Integer, nullable=False, default=1),
     Column("created_at", DateTime(timezone=True)),
     Column("updated_at", DateTime(timezone=True)),
 )

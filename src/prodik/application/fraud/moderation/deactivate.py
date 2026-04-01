@@ -4,12 +4,14 @@ from uuid import UUID
 from prodik.application.errors import NotEnoughRightsError, RuleNotFoundError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import FraudRuleRepository
+from prodik.application.interfaces.uow import UoW
 
 
 @dataclass
 class DeactivateFraudRuleInteractor:
     identity_provider: IdentityProvider
     fraud_rule_repository: FraudRuleRepository
+    uow: UoW
 
     async def execute(self, target_id: UUID) -> None:
         current_user = await self.identity_provider.get_current_user()
@@ -23,3 +25,4 @@ class DeactivateFraudRuleInteractor:
         fraud_rule.deactivate()
 
         await self.fraud_rule_repository.update(fraud_rule)
+        await self.uow.commit()

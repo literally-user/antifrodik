@@ -1,5 +1,16 @@
-from dishka import Provider, Scope, provide_all
+from dishka import Provider, Scope, provide, provide_all
 
+from prodik.application.fraud.command import (
+    CreateFraudRuleInteractor,
+    UpdateFraudRuleInteractor,
+    ValidateRuleInteractor,
+)
+from prodik.domain.fraud.dsl import FraudRuleDslValidator
+from prodik.application.fraud.moderation import DeactivateFraudRuleInteractor
+from prodik.application.fraud.query import (
+    GetAllFraudRulesInteractor,
+    GetFraudRuleInteractor,
+)
 from prodik.application.user.command import (
     CurrentUserUpdateProfileInteractor,
     LoginUserInteractor,
@@ -15,13 +26,8 @@ from prodik.application.user.query import (
     GetUserInteractor,
     GetUsersInteractor,
 )
-from prodik.application.fraud.command import (
-    UpdateFraudRuleInteractor,
-    ValidateRuleInteractor,
-    CreateFraudRuleInteractor
-)
-from prodik.application.fraud.moderation import DeactivateFraudRuleInteractor
-from prodik.application.fraud.query import GetAllFraudRulesInteractor, GetFraudRuleInteractor
+
+
 class ApplicationProvider(Provider):
     provides = provide_all(
         GetAllFraudRulesInteractor,
@@ -41,3 +47,7 @@ class ApplicationProvider(Provider):
         GetUserInteractor,
         scope=Scope.REQUEST,
     )
+
+    @provide(scope=Scope.REQUEST)
+    def get_fraud_rule_dsl_validator(self) -> FraudRuleDslValidator:
+        return FraudRuleDslValidator()

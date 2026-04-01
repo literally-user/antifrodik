@@ -85,7 +85,7 @@ async def create_fraud_rule(
 
 @router.post("/validate")
 async def validate_dsl_expression(
-    dsl_expression: Annotated[str, Body],
+    dsl_expression: Annotated[str, Body(embed=True)],
     validate_dsl_expression_interactor: FromDishka[ValidateRuleInteractor],
 ) -> ValidateDslExpressionResponse:
     result = await validate_dsl_expression_interactor.execute(dsl_expression)

@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from uuid import uuid4
 
+from prodik.domain.fraud.dsl import FraudRuleDslValidator
 from prodik.application.errors import NotEnoughRightsError, RuleAlreadyExistsError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import FraudRuleRepository
@@ -30,7 +31,7 @@ class CreateFraudRuleInteractor:
             raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         fraud_rule = await self.fraud_rule_repository.get_by_name(request.name)
-        if fraud_rule is None:
+        if fraud_rule is not None:
             raise RuleAlreadyExistsError("Fraud rule already exists")
 
         now = datetime.now(tz=UTC)
