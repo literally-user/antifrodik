@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 
 from prodik.application.errors import (
     ApplicationError,
+    DslValidationFailedError,
     InvalidTokenError,
     NotEnoughRightsError,
     RuleAlreadyExistsError,
@@ -16,7 +17,6 @@ from prodik.application.errors import (
     UserDeactivatedError,
     UserNotFoundError,
     WrongCredentialsError,
-    DslValidationFailedError,
 )
 from prodik.presentation.auth import router as auth_router
 from prodik.presentation.fraud import router as fraud_router
