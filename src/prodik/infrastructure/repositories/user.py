@@ -56,6 +56,12 @@ class UserRepositoryImpl(UserRepository):
             )
         )
 
+    async def get_users_by_offset(self, page: int, size: int) -> list[User]:
+        result = await self._session.execute(
+            sqlalchemy.select(User).offset(page * size).limit(size)
+        )
+        return list(result.scalars().all())
+
     async def get_by_id(self, target_id: UUID) -> User | None:
         result = await self._session.execute(
             sqlalchemy.select(User).where(

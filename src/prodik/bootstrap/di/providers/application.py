@@ -15,10 +15,21 @@ from prodik.application.user.query import (
     GetUserInteractor,
     GetUsersInteractor,
 )
-
-
+from prodik.application.fraud.command import (
+    UpdateFraudRuleInteractor,
+    ValidateRuleInteractor,
+    CreateFraudRuleInteractor
+)
+from prodik.application.fraud.moderation import DeactivateFraudRuleInteractor
+from prodik.application.fraud.query import GetAllFraudRulesInteractor, GetFraudRuleInteractor
 class ApplicationProvider(Provider):
     provides = provide_all(
+        GetAllFraudRulesInteractor,
+        GetFraudRuleInteractor,
+        DeactivateFraudRuleInteractor,
+        CreateFraudRuleInteractor,
+        ValidateRuleInteractor,
+        UpdateFraudRuleInteractor,
         CurrentUserUpdateProfileInteractor,
         UpdateProfileInteractor,
         RegisterUserInteractor,
