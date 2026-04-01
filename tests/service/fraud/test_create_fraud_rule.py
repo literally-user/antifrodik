@@ -86,3 +86,43 @@ async def test_create_fraud_rule_forbidden(
         timestamp=IsStr(),
         path=f"/api/v1/fraud-rules/"
     )
+
+async def test_create_fraud_rule_unprocessable_content(
+    test_client: AsyncClient,
+    test_session: AsyncSession,
+    test_user_with_credentials: UserWithCredentials
+) -> None:
+    await test_session.execute(
+        update(User).where(
+            User.email == test_user_with_credentials.user.email # type: ignore
+        ).values(role=Role.ADMIN)
+    )
+    auth_response = await test_client.post("/api/v1/auth/login", json={
+        "email": test_user_with_credentials.user.email,
+        "password": test_user_with_credentials.password,
+    })
+
+    auth_content = auth_response.json()
+
+    response = await test_client.post(
+        f"/api/v1/fraud-rules/",
+        json={
+            "name": "mega-fraud-rule",
+            "description": None,
+            "dsl_expression": "amount > 10INVALID000 AND user.age < 21",
+            "enabled": True,
+            "priority": 1,
+        },
+        headers={
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
+        }
+    )
+
+    assert response.status_code == 422
+    assert response.json() == IsPartialDict(
+        code="INVALID_DSL_FORMAT",
+        message="Invalid dsl format",
+        trace_id=IsStr(),
+        timestamp=IsStr(),
+        path=f"/api/v1/fraud-rules/"
+    )

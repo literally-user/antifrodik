@@ -2,11 +2,16 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from prodik.application.errors import NotEnoughRightsError, RuleAlreadyExistsError
+from prodik.application.errors import (
+    DslValidationFailedError,
+    NotEnoughRightsError,
+    RuleAlreadyExistsError,
+)
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import FraudRuleRepository
 from prodik.application.interfaces.uow import UoW
 from prodik.domain.fraud import FraudRule
+from prodik.domain.fraud.dsl import FraudRuleDslValidator
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)
@@ -21,6 +26,7 @@ class CreateFraudRuleRequestDTO:
 @dataclass
 class CreateFraudRuleInteractor:
     fraud_rule_repository: FraudRuleRepository
+    dsl_validator: FraudRuleDslValidator
     identity_provider: IdentityProvider
     uow: UoW
 
@@ -32,6 +38,9 @@ class CreateFraudRuleInteractor:
         fraud_rule = await self.fraud_rule_repository.get_by_name(request.name)
         if fraud_rule is not None:
             raise RuleAlreadyExistsError("Fraud rule already exists")
+
+        if not self.dsl_validator.validate(request.dsl_expression).is_valid:
+            raise DslValidationFailedError("Invalid dsl format")
 
         now = datetime.now(tz=UTC)
         fraud_rule_model = FraudRule(

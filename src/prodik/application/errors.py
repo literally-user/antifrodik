@@ -19,6 +19,9 @@ class ApplicationError(Exception):
 class UserAlreadyExistsError(ApplicationError): ...
 
 
+class DslValidationFailedError(ApplicationError): ...
+
+
 class RuleAlreadyExistsError(ApplicationError): ...
 
 

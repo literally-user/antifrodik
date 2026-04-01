@@ -16,6 +16,7 @@ from prodik.application.errors import (
     UserDeactivatedError,
     UserNotFoundError,
     WrongCredentialsError,
+    DslValidationFailedError,
 )
 from prodik.presentation.auth import router as auth_router
 from prodik.presentation.fraud import router as fraud_router
@@ -46,6 +47,10 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     UserAlreadyExistsError: {
         "status": status.HTTP_409_CONFLICT,
         "exception": "EMAIL_ALREADY_EXISTS",
+    },
+    DslValidationFailedError: {
+        "status": status.HTTP_422_UNPROCESSABLE_CONTENT,
+        "exception": "INVALID_DSL_FORMAT"
     },
     RuleNotFoundError: {
         "status": status.HTTP_404_NOT_FOUND,
