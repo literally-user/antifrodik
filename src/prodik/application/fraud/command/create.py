@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from uuid import uuid4
 
-from prodik.domain.fraud.dsl import FraudRuleDslValidator
 from prodik.application.errors import NotEnoughRightsError, RuleAlreadyExistsError
 from prodik.application.interfaces.identity_provider import IdentityProvider
 from prodik.application.interfaces.repositories import FraudRuleRepository

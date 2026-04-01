@@ -28,9 +28,11 @@ class FraudRuleRepositoryImpl(FraudRuleRepository):
 
     async def update(self, fraud_rule: FraudRule) -> None:
         await self._session.execute(
-            update(FraudRule).where(
+            update(FraudRule)
+            .where(
                 FraudRule.id == fraud_rule.id  # type: ignore
-            ).values(
+            )
+            .values(
                 name=fraud_rule.name,
                 description=fraud_rule.description,
                 dsl_expression=fraud_rule.dsl_expression,

@@ -49,7 +49,7 @@ fraud_rule_table = Table(
     metadata,
     Column("id", UUID, primary_key=True, nullable=False),
     Column("name", String, nullable=False),
-    Column("description", String, nullable=False),
+    Column("description", String),
     Column("dsl_expression", String, nullable=False),
     Column("enabled", Boolean, nullable=False),
     Column("priority", Integer, nullable=False, default=1),

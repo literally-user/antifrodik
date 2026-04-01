@@ -1,8 +1,8 @@
 """[]
 
-Revision ID: d9749a6cf2c4
+Revision ID: c74f4e402dab
 Revises: fe90d04b57cd
-Create Date: 2026-04-01 10:34:46.614608
+Create Date: 2026-04-01 13:43:38.422644
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd9749a6cf2c4'
+revision: str = 'c74f4e402dab'
 down_revision: Union[str, Sequence[str], None] = 'fe90d04b57cd'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table('fraud_rule_table',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=True),
     sa.Column('dsl_expression', sa.String(), nullable=False),
     sa.Column('enabled', sa.Boolean(), nullable=False),
     sa.Column('priority', sa.Integer(), nullable=False),

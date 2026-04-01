@@ -5,7 +5,6 @@ from prodik.application.fraud.command import (
     UpdateFraudRuleInteractor,
     ValidateRuleInteractor,
 )
-from prodik.domain.fraud.dsl import FraudRuleDslValidator
 from prodik.application.fraud.moderation import DeactivateFraudRuleInteractor
 from prodik.application.fraud.query import (
     GetAllFraudRulesInteractor,
@@ -26,6 +25,7 @@ from prodik.application.user.query import (
     GetUserInteractor,
     GetUsersInteractor,
 )
+from prodik.domain.fraud.dsl import FraudRuleDslValidator
 
 
 class ApplicationProvider(Provider):

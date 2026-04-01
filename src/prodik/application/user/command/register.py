@@ -56,7 +56,7 @@ class RegisterUserInteractor:
             id=user_id,
             email=request.email,
             full_name=request.full_name,
-            role=Role.ADMIN,
+            role=Role.USER,
             is_active=True,
             region=request.region,
             gender=request.gender,
