@@ -50,7 +50,7 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
     },
     DslValidationFailedError: {
         "status": status.HTTP_422_UNPROCESSABLE_CONTENT,
-        "exception": "INVALID_DSL_FORMAT"
+        "exception": "INVALID_DSL_FORMAT",
     },
     RuleNotFoundError: {
         "status": status.HTTP_404_NOT_FOUND,
