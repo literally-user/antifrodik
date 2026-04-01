@@ -52,7 +52,7 @@ async def test_create_fraud_rule_ok(
         }
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json() == IsPartialDict(
         id=IsStr(),
         name="mega-fraud-rule",

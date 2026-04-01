@@ -67,7 +67,7 @@ async def deactivate_fraud_rule(
     await deactivate_fraud_rule_interactor.execute(target_id)
 
 
-@router.post("/")
+@router.post("/", status_code=201)
 async def create_fraud_rule(
     create_fraud_rule_request: CreateFraudRuleRequest,
     create_fraud_rule_interactor: FromDishka[CreateFraudRuleInteractor],
