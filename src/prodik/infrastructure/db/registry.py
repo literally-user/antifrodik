@@ -16,6 +16,7 @@ from sqlalchemy.orm import composite, registry
 
 from prodik.domain.fraud import FraudRule
 from prodik.domain.transaction import (
+    RuleResults,
     Transaction,
     TransactionChannel,
     TransactionLocation,
@@ -88,6 +89,19 @@ transaction_table = Table(
     Column("created_at", DateTime(timezone=True)),
 )
 
+rule_results_table = Table(
+    "rule_results_table",
+    metadata,
+    Column("id", UUID, primary_key=True, nullable=False),
+    Column("transaction_id", UUID, ForeignKey("transaction_table.id"), nullable=False),
+    Column("rule_id", UUID, ForeignKey("fraud_rule_table.id"), nullable=False),
+    Column("rule_name", String, nullable=False),
+    Column("priority", Integer, nullable=False),
+    Column("enabled", Boolean, nullable=False),
+    Column("matched", Boolean, nullable=False),
+    Column("description", String, nullable=False),
+)
+
 
 def start_mapper() -> None:
     registry_mapper.map_imperatively(FraudRule, fraud_rule_table)
@@ -106,3 +120,4 @@ def start_mapper() -> None:
             ),
         },
     )
+    registry_mapper.map_imperatively(RuleResults, rule_results_table)
