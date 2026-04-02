@@ -10,6 +10,11 @@ from prodik.application.fraud.query import (
     GetAllFraudRulesInteractor,
     GetFraudRuleInteractor,
 )
+from prodik.application.transaction.command import UploadTransactionInteractor
+from prodik.application.transaction.query import (
+    GetAllTransactionsInteractor,
+    GetTransactionInteractor,
+)
 from prodik.application.user.command import (
     CurrentUserUpdateProfileInteractor,
     LoginUserInteractor,
@@ -30,6 +35,9 @@ from prodik.domain.fraud.dsl import FraudRuleDslValidator
 
 class ApplicationProvider(Provider):
     provides = provide_all(
+        UploadTransactionInteractor,
+        GetTransactionInteractor,
+        GetAllTransactionsInteractor,
         GetAllFraudRulesInteractor,
         GetFraudRuleInteractor,
         DeactivateFraudRuleInteractor,

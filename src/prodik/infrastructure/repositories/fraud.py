@@ -56,3 +56,9 @@ class FraudRuleRepositoryImpl(FraudRuleRepository):
     async def get_all_rules(self) -> list[FraudRule]:
         result = await self._session.execute(select(FraudRule))
         return list(result.scalars().all())
+
+    async def get_all_sorted_by_priority(self) -> list[FraudRule]:
+        result = await self._session.execute(
+            select(FraudRule).order_by(FraudRule.priority.asc())  # type: ignore
+        )
+        return list(result.scalars().all())

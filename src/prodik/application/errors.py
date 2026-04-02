@@ -7,13 +7,13 @@ class DetailsMeta(TypedDict):
 
 
 class ApplicationError(Exception):
-    description: str
-    details: DetailsMeta | None
-
-    def __init__(self, description: str, details: DetailsMeta | None = None) -> None:
-        self.description = description
-        self.details = details
+    def __init__(
+        self,
+        description: str,
+        details: DetailsMeta | None = None,
+    ) -> None:
         super().__init__(description)
+        self.details = details
 
 
 class UserAlreadyExistsError(ApplicationError): ...
@@ -41,3 +41,6 @@ class UserNotFoundError(ApplicationError): ...
 
 
 class InvalidTokenError(ApplicationError): ...
+
+
+class TransactionNotFoundError(ApplicationError): ...
