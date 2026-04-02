@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 from prodik.application.errors import (
     ApplicationError,
@@ -15,32 +15,15 @@ from prodik.application.interfaces.repositories import (
     UserRepository,
 )
 from prodik.application.interfaces.uow import UoW
+from prodik.application.transaction.command.upload import UploadTransactionRequestDTO
 from prodik.domain.fraud.dsl.errors import DslParseError, DslValidationError
 from prodik.domain.fraud.dsl.evaluator import FraudRuleEvaluator
 from prodik.domain.fraud.dsl.parser import DslParser
 from prodik.domain.transaction import (
     RuleResults,
     Transaction,
-    TransactionChannel,
-    TransactionLocation,
-    TransactionMetadata,
     TransactionStatus,
 )
-
-
-@dataclass(slots=True, frozen=True, kw_only=True)
-class UploadTransactionRequestDTO:
-    user_id: UUID
-    amount: float
-    currency: str
-    merchant_id: str | None
-    merchant_category_code: str | None
-    timestamp: datetime
-    ip_address: str | None
-    device_id: str | None
-    channel: TransactionChannel | None
-    location: TransactionLocation | None
-    metadata: TransactionMetadata | None
 
 
 @dataclass(slots=True, frozen=True, kw_only=True)

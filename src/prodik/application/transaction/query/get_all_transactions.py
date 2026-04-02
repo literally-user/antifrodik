@@ -14,10 +14,11 @@ from prodik.domain.transaction import Transaction, TransactionStatus
 
 @dataclass(slots=True, frozen=True, kw_only=True)
 class GetAllTransactionsRequestDTO:
-    status: TransactionStatus
-    is_fraud: bool
-    from_date: datetime
-    to_date: datetime
+    target_id: UUID | None
+    status: TransactionStatus | None
+    is_fraud: bool | None
+    from_date: datetime | None
+    to_date: datetime | None
     page: int
     size: int
 
@@ -37,21 +38,27 @@ class GetAllTransactionsInteractor:
     identity_provider: IdentityProvider
 
     async def execute(
-        self, request: GetAllTransactionsRequestDTO, target_id: UUID
+        self, request: GetAllTransactionsRequestDTO
     ) -> GetAllTransactionsResponseDTO:
         current_user = await self.identity_provider.get_current_user()
-        if not current_user.can_manage_transactions() and current_user.id != target_id:
+        if (
+            not current_user.can_manage_transactions()
+            and request.target_id is not None
+            and current_user.id != request.target_id
+        ):
             raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
-        if current_user.id == target_id:
-            target_user = current_user
-        else:
-            target_user = await self.user_repository.get_by_id(target_id)  # type: ignore[assignment]
+        target_id = request.target_id
+        if not current_user.can_manage_transactions():
+            target_id = current_user.id
+        elif target_id == current_user.id:
+            target_id = current_user.id
+        elif target_id is not None:
+            target_user = await self.user_repository.get_by_id(target_id)
             if target_user is None:
                 raise UserNotFoundError("User not found")
 
         transactions = await self.transaction_repository.get_all_by_filters(
-            target_user.id,
             TransactionFilters(
                 target_id=target_id,
                 status=request.status,

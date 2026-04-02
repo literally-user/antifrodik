@@ -38,20 +38,29 @@ class TransactionRepositoryImpl(TransactionRepository):
 
     async def get_all_by_filters(
         self,
-        target_id: UUID,
         filters: TransactionFilters,
     ) -> list[Transaction]:
+        conditions = []
+        if filters.target_id is not None:
+            conditions.append(Transaction.user_id == filters.target_id)  # type: ignore[arg-type]
+        if filters.status is not None:
+            conditions.append(Transaction.status == filters.status)  # type: ignore[arg-type]
+        if filters.is_fraud is not None:
+            conditions.append(Transaction.is_fraud == filters.is_fraud)  # type: ignore[arg-type]
+        if filters.from_date is not None:
+            conditions.append(
+                Transaction.timestamp >= filters.from_date.isoformat()  # type: ignore[arg-type]
+            )
+        if filters.to_date is not None:
+            conditions.append(
+                Transaction.timestamp <= filters.to_date.isoformat()  # type: ignore[arg-type]
+            )
+
         query = (
             sqlalchemy.select(Transaction)
-            .where(
-                Transaction.user_id == target_id,  # type: ignore
-                Transaction.status == filters.status,  # type: ignore
-                Transaction.is_fraud == filters.is_fraud,  # type: ignore
-                Transaction.timestamp >= filters.from_date.isoformat(),  # type: ignore
-                Transaction.timestamp <= filters.to_date.isoformat(),  # type: ignore
-            )
+            .where(*conditions)
             .order_by(Transaction.created_at.desc())  # type: ignore
-            .offset(filters.page * filters.size)
+            .offset((filters.page - 1) * filters.size)
             .limit(filters.size)
         )
 

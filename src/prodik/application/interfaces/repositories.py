@@ -10,11 +10,11 @@ from prodik.domain.user import User, UserCredentials
 
 @dataclass(slots=True, frozen=True, kw_only=True)
 class TransactionFilters:
-    target_id: UUID
-    status: TransactionStatus
-    is_fraud: bool
-    from_date: datetime
-    to_date: datetime
+    target_id: UUID | None
+    status: TransactionStatus | None
+    is_fraud: bool | None
+    from_date: datetime | None
+    to_date: datetime | None
     page: int
     size: int
 
@@ -38,9 +38,7 @@ class TransactionRepository(Protocol):
     async def create(self, transaction: Transaction) -> None: ...
     async def create_many(self, transactions: list[Transaction]) -> None: ...
     async def get_by_id(self, target_id: UUID) -> Transaction | None: ...
-    async def get_all_by_filters(
-        self, target_id: UUID, filters: TransactionFilters
-    ) -> list[Transaction]: ...
+    async def get_all_by_filters(self, filters: TransactionFilters) -> list[Transaction]: ...
 
 
 class UserCredentialsRepository(Protocol):
