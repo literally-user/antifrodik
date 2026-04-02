@@ -8,10 +8,10 @@ from pydantic import AwareDatetime, BaseModel, Field, RootModel
 from prodik.domain.transaction import (
     RuleResults,
     Transaction,
-    TransactionStatus,
     TransactionChannel,
     TransactionLocation,
     TransactionMetadata,
+    TransactionStatus,
 )
 
 
@@ -67,47 +67,32 @@ class GetTransactionResponse(BaseModel):
     rule_results: Annotated[
         list[RuleResults],
         Field(
-            description='Results of applying all enabled rules at the time of check.\nAll rules are returned (both triggered and not triggered).\n'
+            description="Results of applying all enabled rules at the time of check.\n"
         ),
     ]
 
 
-
 class GetAllTransactionsRequest(BaseModel):
-    target_id: Annotated[
-        UUID | None,
-        Query(description="Transaction status")
-    ] = None
-    
+    target_id: Annotated[UUID | None, Query(description="Transaction status")] = None
+
     status: Annotated[
-        TransactionStatus | None,
-        Query(description="Transaction status")
+        TransactionStatus | None, Query(description="Transaction status")
     ] = None
 
-    is_fraud: Annotated[
-        bool | None,
-        Query(description="Fraud flag")
-    ] = None
+    is_fraud: Annotated[bool | None, Query(description="Fraud flag")] = None
 
     from_date: Annotated[
-        datetime | None,
-        Query(alias="from", description="Start date (RFC3339)")
+        datetime | None, Query(alias="from", description="Start date (RFC3339)")
     ] = None
 
     to_date: Annotated[
-        datetime | None,
-        Query(alias="to", description="End date (RFC3339)")
+        datetime | None, Query(alias="to", description="End date (RFC3339)")
     ] = None
 
-    page: Annotated[
-        int,
-        Query(ge=1, description="Page number")
-    ] = 1
+    page: Annotated[int, Query(ge=1, description="Page number")] = 1
 
-    size: Annotated[
-        int,
-        Query(ge=1, le=100, description="Page size")
-    ] = 10
+    size: Annotated[int, Query(ge=1, le=100, description="Page size")] = 10
+
 
 class GetAllTransactionsResponse(BaseModel):
     items: list[Transaction]
@@ -115,11 +100,12 @@ class GetAllTransactionsResponse(BaseModel):
     page: Annotated[int, Field(ge=0)]
     size: Annotated[int, Field(ge=1)]
 
+
 class BatchTransactionsRequest(BaseModel):
     items: Annotated[
         list[UploadTransactionRequest],
         Field(
-            description='Array of transactions for batch creation',
+            description="Array of transactions for batch creation",
             max_length=500,
             min_length=1,
         ),

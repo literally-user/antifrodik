@@ -49,9 +49,7 @@ class GetAllTransactionsInteractor:
             raise NotEnoughRightsError("Insufficient rights to perform the operation")
 
         target_id = request.target_id
-        if not current_user.can_manage_transactions():
-            target_id = current_user.id
-        elif target_id == current_user.id:
+        if not current_user.can_manage_transactions() or target_id == current_user.id:
             target_id = current_user.id
         elif target_id is not None:
             target_user = await self.user_repository.get_by_id(target_id)

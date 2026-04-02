@@ -1,9 +1,9 @@
+from .batch import BatchTransactionsInteractor, BatchTransactionsRequestDTO
 from .upload import (
     UploadTransactionInteractor,
     UploadTransactionRequestDTO,
     UploadTransactionResponseDTO,
 )
-from .batch import BatchTransactionsInteractor, BatchTransactionsRequestDTO
 
 __all__ = (
     "BatchTransactionsInteractor",

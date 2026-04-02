@@ -42,23 +42,23 @@ class TransactionRepositoryImpl(TransactionRepository):
     ) -> list[Transaction]:
         conditions = []
         if filters.target_id is not None:
-            conditions.append(Transaction.user_id == filters.target_id)  # type: ignore[arg-type]
+            conditions.append(Transaction.user_id == filters.target_id)
         if filters.status is not None:
-            conditions.append(Transaction.status == filters.status)  # type: ignore[arg-type]
+            conditions.append(Transaction.status == filters.status)
         if filters.is_fraud is not None:
-            conditions.append(Transaction.is_fraud == filters.is_fraud)  # type: ignore[arg-type]
+            conditions.append(Transaction.is_fraud == filters.is_fraud)
         if filters.from_date is not None:
             conditions.append(
-                Transaction.timestamp >= filters.from_date.isoformat()  # type: ignore[arg-type]
+                Transaction.timestamp >= filters.from_date.isoformat()  # type: ignore
             )
         if filters.to_date is not None:
             conditions.append(
-                Transaction.timestamp <= filters.to_date.isoformat()  # type: ignore[arg-type]
+                Transaction.timestamp <= filters.to_date.isoformat()  # type: ignore
             )
 
         query = (
             sqlalchemy.select(Transaction)
-            .where(*conditions)
+            .where(*conditions)  # type: ignore
             .order_by(Transaction.created_at.desc())  # type: ignore
             .offset((filters.page - 1) * filters.size)
             .limit(filters.size)
