@@ -135,7 +135,9 @@ class BatchTransactionsInteractor:
                 )
                 rule_results.append(rule_result)
 
-            transaction_model.is_fraud = any(result.matched for result in rule_results)
+            transaction_model.is_fraud = any(
+                result.matched for result in rule_results if result.transaction_id == transaction_model.id
+            )
             if transaction_model.is_fraud:
                 transaction_model.status = TransactionStatus.DECLINED
 
