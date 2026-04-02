@@ -39,6 +39,7 @@ class UpdateFraudRuleInteractor:
         fraud_rule.set_dsl_expression(request.dsl_expression)
         fraud_rule.set_enabled_status(status=request.enabled)
         fraud_rule.set_priority(request.priority)
+        fraud_rule.mark_updated()
 
         await self.fraud_rule_repository.update(fraud_rule)
         await self.uow.commit()

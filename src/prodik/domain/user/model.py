@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import StrEnum
 from typing import Final
 from uuid import UUID
@@ -113,6 +113,9 @@ class User:
 
     def set_role(self, role: Role) -> None:
         self.role = role
+
+    def mark_updated(self) -> None:
+        self.updated_at = datetime.now(tz=UTC)
 
 
 @dataclass(kw_only=True)

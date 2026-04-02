@@ -32,6 +32,7 @@ class CurrentUserUpdateProfileInteractor:
         current_user.change_region(request.region)
         current_user.set_gender(request.gender)
         current_user.set_marital_status(request.marital_status)
+        current_user.mark_updated()
 
         if not current_user.can_change_extra_roles() and (
             request.role is not None or request.is_active is not None

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Final
 from uuid import UUID
 
@@ -65,3 +65,6 @@ class FraudRule:
 
     def set_priority(self, priority: int) -> None:
         self.priority = priority
+
+    def mark_updated(self) -> None:
+        self.updated_at = datetime.now(tz=UTC)
