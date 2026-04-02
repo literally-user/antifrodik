@@ -4,7 +4,7 @@ from enum import StrEnum
 from typing import Final
 from uuid import UUID
 
-from prodik.application.errors import (
+from prodik.domain.user import (
     AgeTooBigError,
     AgeTooSmallError,
     FullNameTooLongError,

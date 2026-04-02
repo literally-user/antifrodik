@@ -1,0 +1,16 @@
+from prodik.application.errors import ApplicationError
+
+
+class NameTooShortError(ApplicationError): ...
+
+
+class NameTooLongError(ApplicationError): ...
+
+
+class DescriptionTooLongError(ApplicationError): ...
+
+
+class ExpressionTooShortError(ApplicationError): ...
+
+
+class ExpressionTooLongError(ApplicationError): ...
