@@ -4,18 +4,20 @@ from enum import StrEnum
 from typing import Any
 from uuid import UUID
 
-
 type TransactionMetadata = dict[str, Any]
+
 
 class TransactionStatus(StrEnum):
     APPROVED = "APPROVED"
     DECLINED = "DECLINED"
 
+
 class TransactionChannel(StrEnum):
-    WEB = 'WEB'
-    MOBILE = 'MOBILE'
-    POS = 'POS'
-    OTHER = 'OTHER'
+    WEB = "WEB"
+    MOBILE = "MOBILE"
+    POS = "POS"
+    OTHER = "OTHER"
+
 
 @dataclass(kw_only=True)
 class TransactionLocation:
@@ -23,6 +25,19 @@ class TransactionLocation:
     city: str | None
     latitude: float | None
     longitude: float | None
+
+
+@dataclass(kw_only=True)
+class RuleResults:
+    id: UUID
+    rule_id: UUID
+    transaction_id: UUID
+    rule_name: str
+    priority: int
+    enabled: bool
+    matched: bool
+    description: str
+
 
 @dataclass(kw_only=True)
 class Transaction:

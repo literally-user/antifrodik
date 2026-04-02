@@ -122,7 +122,7 @@ async def application_error_handler(
     response = {
         **base_exception_body(request.url.path),
         "code": exception["exception"],
-        "message": exc.description,
+        "message": str(exc),
     }
     if exc.details is not None:
         response.update({"details": exc.details})
