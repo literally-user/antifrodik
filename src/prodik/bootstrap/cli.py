@@ -1,25 +1,26 @@
-from uuid import uuid4
+import asyncio
 import contextlib
 import sys
-import asyncio
-from datetime import datetime, UTC
 from collections.abc import Callable, Iterator
+from datetime import UTC, datetime
 from importlib.resources import as_file, files
 from pathlib import Path
 from typing import Final
+from uuid import uuid4
 
 import alembic.config
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy import insert
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 import prodik.infrastructure.db
-from prodik.infrastructure.config import Config
 from prodik.bootstrap.api import run_http
+from prodik.domain.user import Role, User, UserCredentials
+from prodik.infrastructure.config import Config
 from prodik.infrastructure.db import start_mapper
 from prodik.infrastructure.password_hasher import PasswordHasherImpl
-from prodik.domain.user import User, Role, UserCredentials
 
 MIN_ARGS_COUNT: Final[int] = 3
+
 
 async def create_admin_profile(config: Config) -> None:
     password_hasher = PasswordHasherImpl()
@@ -29,8 +30,8 @@ async def create_admin_profile(config: Config) -> None:
 
     now = datetime.now(tz=UTC)
     user_id = uuid4()
-    async with session() as session:
-        await session.execute(
+    async with session() as conn:
+        await conn.execute(
             insert(User).values(
                 id=user_id,
                 email=config.admin_config.email,
@@ -45,12 +46,15 @@ async def create_admin_profile(config: Config) -> None:
                 updated_at=now,
             )
         )
-        await session.execute(insert(UserCredentials).values(
-            id=uuid4(),
-            user_id=user_id,
-            hashed_password=password_hasher.hash(config.admin_config.password)
-        ))
-        await session.commit()
+        await conn.execute(
+            insert(UserCredentials).values(
+                id=uuid4(),
+                user_id=user_id,
+                hashed_password=password_hasher.hash(config.admin_config.password),
+            )
+        )
+        await conn.commit()
+
 
 def get_alembic_config_path() -> Iterator[Path]:
     source = files(prodik.infrastructure.db).joinpath("alembic.ini")
@@ -109,6 +113,7 @@ def main() -> None:
     start_mapper()
     asyncio.run(create_admin_profile(config))
     modules[module][option](args)
+
 
 def cli() -> None:
     main()
