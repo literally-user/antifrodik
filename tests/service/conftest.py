@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSessio
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.bootstrap.di.container import get_async_container
 from prodik.bootstrap.di.providers import ApplicationProvider, InfrastructureProvider
-from prodik.bootstrap.cli import run_migrations
+from prodik.bootstrap.cli import run_migrations, create_admin_profile
 from prodik.bootstrap.api import create_app
 from prodik.infrastructure.config import Config, DatabaseConfig, SecretConfig
 from prodik.infrastructure.db.registry import start_mapper
@@ -34,18 +34,23 @@ TEST_CONFIG: dict[str, dict[str, str | int]] = {
     "database_config": {
         "DATABASE_URL": "postgresql+asyncpg://postgres:admin_password@127.0.0.1:5432/postgres",
     },
+    "admin_config": {
+        "ADMIN_FULLNAME": "admin",
+        "ADMIN_PASSWORD": "Ddz180905",
+        "ADMIN_EMAIL": "admin@example.com",
+    }
 }
 
 def pytest_configure(config: pytest.Config) -> None:
     start_mapper()
 
 @pytest.fixture(scope="session")
-def config() -> Config:
+def test_config() -> Config:
     return Config(**TEST_CONFIG)
 
 @pytest.fixture
-async def test_password_hasher(config: Config) -> PasswordHasher:
-    container = get_async_container(config)
+async def test_password_hasher(test_config: Config) -> PasswordHasher:
+    container = get_async_container(test_config)
     async with container() as con:
         return await con.get(PasswordHasher) # type: ignore[no-any-return]
 
@@ -68,18 +73,19 @@ def test_commit_mock() -> mock.AsyncMock:
     return mock.AsyncMock()
 
 @pytest.fixture(scope="session")
-async def test_engine(config: Config) -> AsyncGenerator[AsyncEngine]:
-    engine = create_async_engine(config.database_config.url)
+async def test_engine(test_config: Config) -> AsyncGenerator[AsyncEngine]:
+    engine = create_async_engine(test_config.database_config.url)
 
     async with engine.begin() as connection:
         await connection.execute(text("DROP SCHEMA IF EXISTS public CASCADE"))
         await connection.execute(text("CREATE SCHEMA public"))
 
-    os.environ["DATABASE_URL"] = config.database_config.url
+    os.environ["DATABASE_URL"] = test_config.database_config.url
 
     thread = Thread(target=run_migrations)
     thread.start()
     thread.join()
+    await create_admin_profile(test_config)
 
     yield engine
 
@@ -93,7 +99,7 @@ async def test_session(test_engine: AsyncEngine, test_commit_mock: mock.AsyncMoc
         await session.rollback()
 
 @pytest.fixture
-async def test_dishka_container(test_session: AsyncSession, config: Config) -> AsyncContainer:
+async def test_dishka_container(test_session: AsyncSession, test_config: Config) -> AsyncContainer:
     class TestDishkaProvider(Provider):
         override = True
 
@@ -107,8 +113,8 @@ async def test_dishka_container(test_session: AsyncSession, config: Config) -> A
         ApplicationProvider(),
         InfrastructureProvider(),
         context={
-            SecretConfig: config.secret_config,
-            DatabaseConfig: config.database_config,
+            SecretConfig: test_config.secret_config,
+            DatabaseConfig: test_config.database_config,
         },
     )
 

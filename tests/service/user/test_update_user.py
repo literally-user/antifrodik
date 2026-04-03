@@ -3,11 +3,10 @@ from faker import Faker
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import update
 
 from tests.service.factories import UserWithCredentials, create_user_with_credentials
 from prodik.application.interfaces.password_hasher import PasswordHasher
-from prodik.domain.user import User
+from prodik.infrastructure.config import Config
 
 @pytest.mark.asyncio
 async def test_update_current_profile_ok(
@@ -89,21 +88,16 @@ async def test_update_current_profile_forbidden(
 @pytest.mark.asyncio
 async def test_update_profile_by_admin(
     faker: Faker,
+    test_config: Config,
     test_client: AsyncClient,
     test_session: AsyncSession,
     test_password_hasher: PasswordHasher,
 ) -> None:
-    admin_user = await create_user_with_credentials(test_session, faker, test_password_hasher)
-    await test_session.execute(
-        update(User).where(
-            User.email == admin_user.user.email # type: ignore
-        ).values(role="ADMIN")
-    )
     target_user = await create_user_with_credentials(test_session, faker, test_password_hasher)
 
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": admin_user.user.email,
-        "password": admin_user.password,
+        "email": test_config.admin_config.email,
+        "password": test_config.admin_config.password,
     })
 
     auth_content = auth_response.json()
@@ -140,29 +134,27 @@ async def test_update_profile_by_admin(
 
 @pytest.mark.asyncio
 async def test_update_admin_profile_by_admin(
-    faker: Faker,
+    test_config: Config,
     test_client: AsyncClient,
-    test_session: AsyncSession,
-    test_password_hasher: PasswordHasher,
 ) -> None:
-    admin_user = await create_user_with_credentials(test_session, faker, test_password_hasher)
-    await test_session.execute(
-        update(User).where(
-            User.email == admin_user.user.email # type: ignore
-        ).values(role="ADMIN")
-    )
-
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": admin_user.user.email,
-        "password": admin_user.password,
+        "email": test_config.admin_config.email,
+        "password": test_config.admin_config.password,
     })
 
     auth_content = auth_response.json()
+    current_admin_response = await test_client.get(
+        f"/api/v1/users/me",
+        headers={
+            "Authorization": f"Bearer {auth_content.get('access_token')}"
+        }
+    )
+    current_admin = current_admin_response.json()
 
     response = await test_client.put(
-        f"/api/v1/users/{admin_user.user.id}",
+        f"/api/v1/users/{current_admin.get('id')}",
         json={
-            "full_name": admin_user.user.full_name + "updated",
+            "full_name": test_config.admin_config.fullname + "updated",
             "age": 20,
             "region": None,
             "gender": "MALE",
@@ -177,8 +169,8 @@ async def test_update_admin_profile_by_admin(
     assert response.status_code == 200
     assert response.json() == IsPartialDict(
         id=IsStr(),
-        email=admin_user.user.email,
-        full_name=admin_user.user.full_name + "updated",
+        email=test_config.admin_config.email,
+        full_name=test_config.admin_config.fullname + "updated",
         role="ADMIN",
         is_active=False,
         region=None,

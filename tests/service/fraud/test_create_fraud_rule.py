@@ -1,12 +1,10 @@
 import pytest
 
 from httpx import AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession
 from dirty_equals import IsPartialDict, IsStr
-from sqlalchemy import update
 
 from tests.service.factories import UserWithCredentials
-from prodik.domain.user import User, Role
+from prodik.infrastructure.config import Config
 
 @pytest.mark.parametrize(
         "enabled_status, dsl_expression, priority",
@@ -22,18 +20,12 @@ async def test_create_fraud_rule_ok(
     dsl_expression: str,
     priority: int,
 
+    test_config: Config,
     test_client: AsyncClient,
-    test_session: AsyncSession,
-    test_user_with_credentials: UserWithCredentials
 ) -> None:
-    await test_session.execute(
-        update(User).where(
-            User.email == test_user_with_credentials.user.email # type: ignore
-        ).values(role=Role.ADMIN)
-    )
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": test_user_with_credentials.user.email,
-        "password": test_user_with_credentials.password,
+        "email": test_config.admin_config.email,
+        "password": test_config.admin_config.password,
     })
 
     auth_content = auth_response.json()
@@ -108,18 +100,12 @@ async def test_create_fraud_rule_forbidden(
 @pytest.mark.asyncio
 async def test_create_fraud_rule_unprocessable_content(
     dsl_expression: str,
+    test_config: Config,
     test_client: AsyncClient,
-    test_session: AsyncSession,
-    test_user_with_credentials: UserWithCredentials
 ) -> None:
-    await test_session.execute(
-        update(User).where(
-            User.email == test_user_with_credentials.user.email # type: ignore
-        ).values(role=Role.ADMIN)
-    )
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": test_user_with_credentials.user.email,
-        "password": test_user_with_credentials.password,
+        "email": test_config.admin_config.email,
+        "password": test_config.admin_config.password,
     })
 
     auth_content = auth_response.json()

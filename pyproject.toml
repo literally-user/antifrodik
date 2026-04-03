@@ -100,4 +100,4 @@ plugins = [
 files = ["src/prodik"]
 
 [project.scripts]
-prodik = "prodik.bootstrap.cli:main"
+prodik = "prodik.bootstrap.cli:cli"

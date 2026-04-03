@@ -93,7 +93,7 @@ class UserCredentialsRepositoryImpl(UserCredentialsRepository):
     async def get_by_user_id(self, target_id: UUID) -> UserCredentials | None:
         result = await self._session.execute(
             sqlalchemy.select(UserCredentials).where(
-                UserCredentials.target_id == target_id  # type: ignore
+                UserCredentials.user_id == target_id  # type: ignore
             )
         )
         return result.scalar_one_or_none()

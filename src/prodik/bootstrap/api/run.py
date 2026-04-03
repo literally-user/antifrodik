@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from prodik.bootstrap.di import get_async_container
 from prodik.infrastructure.config import Config
-from prodik.infrastructure.db import start_mapper
 from prodik.presentation.common import include_exception_handlers, include_handlers
 
 log_config: Final[dict[str, Any]] = {
@@ -66,7 +65,6 @@ def create_app() -> FastAPI:
 def run_http(_argv: list[str]) -> None:
     config = Config()
 
-    start_mapper()
     app = create_app()
     container = get_async_container(config)
     setup_dishka(app=app, container=container)
