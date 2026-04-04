@@ -1,59 +1,17 @@
-import asyncio
 import contextlib
 import sys
 from collections.abc import Callable, Iterator
-from datetime import UTC, datetime
 from importlib.resources import as_file, files
 from pathlib import Path
 from typing import Final
-from uuid import uuid4
 
 import alembic.config
-from sqlalchemy import insert
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 import prodik.infrastructure.db
 from prodik.bootstrap.api import run_http
-from prodik.domain.user import Role, User, UserCredentials
-from prodik.infrastructure.config import Config
 from prodik.infrastructure.db import start_mapper
-from prodik.infrastructure.password_hasher import PasswordHasherImpl
 
 MIN_ARGS_COUNT: Final[int] = 3
-
-
-async def create_admin_profile(config: Config) -> None:
-    password_hasher = PasswordHasherImpl()
-
-    engine = create_async_engine(config.database_config.url)
-    session = async_sessionmaker(engine)
-
-    now = datetime.now(tz=UTC)
-    user_id = uuid4()
-    async with session() as conn:
-        await conn.execute(
-            insert(User).values(
-                id=user_id,
-                email=config.admin_config.email,
-                full_name=config.admin_config.fullname,
-                role=Role.ADMIN,
-                is_active=True,
-                region=None,
-                gender=None,
-                age=None,
-                marital_status=None,
-                created_at=now,
-                updated_at=now,
-            )
-        )
-        await conn.execute(
-            insert(UserCredentials).values(
-                id=uuid4(),
-                user_id=user_id,
-                hashed_password=password_hasher.hash(config.admin_config.password),
-            )
-        )
-        await conn.commit()
 
 
 def get_alembic_config_path() -> Iterator[Path]:
@@ -108,12 +66,5 @@ def main() -> None:
     if option == "api":
         run_migrations()
 
-    config = Config()
-
     start_mapper()
-    asyncio.run(create_admin_profile(config))
     modules[module][option](args)
-
-
-def cli() -> None:
-    main()

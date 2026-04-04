@@ -2,9 +2,12 @@ import pytest
 
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import update
 
 from tests.service.factories import UserWithCredentials
 from prodik.infrastructure.config import Config
+from prodik.domain.user import User, Role
 
 @pytest.mark.parametrize(
         "enabled_status, dsl_expression, priority",
@@ -20,12 +23,18 @@ async def test_create_fraud_rule_ok(
     dsl_expression: str,
     priority: int,
 
-    test_config: Config,
+    test_session: AsyncSession,
     test_client: AsyncClient,
+    test_user_with_credentials: UserWithCredentials,
 ) -> None:
+    await test_session.execute(
+        update(User).values(
+            role=Role.ADMIN,
+        )
+    )
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": test_config.admin_config.email,
-        "password": test_config.admin_config.password,
+        "email": test_user_with_credentials.user.email,
+        "password": test_user_with_credentials.password,
     })
 
     auth_content = auth_response.json()
@@ -100,13 +109,20 @@ async def test_create_fraud_rule_forbidden(
 @pytest.mark.asyncio
 async def test_create_fraud_rule_unprocessable_content(
     dsl_expression: str,
-    test_config: Config,
+    test_session: AsyncSession,
     test_client: AsyncClient,
+    test_user_with_credentials: UserWithCredentials,
 ) -> None:
+    await test_session.execute(
+        update(User).values(
+            role=Role.ADMIN,
+        )
+    )
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": test_config.admin_config.email,
-        "password": test_config.admin_config.password,
+        "email": test_user_with_credentials.user.email,
+        "password": test_user_with_credentials.password,
     })
+
 
     auth_content = auth_response.json()
 

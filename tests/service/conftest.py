@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSessio
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.bootstrap.di.container import get_async_container
 from prodik.bootstrap.di.providers import ApplicationProvider, InfrastructureProvider
-from prodik.bootstrap.cli import run_migrations, create_admin_profile
+from prodik.bootstrap.cli import run_migrations
 from prodik.bootstrap.api import create_app
 from prodik.infrastructure.config import Config, DatabaseConfig, SecretConfig
 from prodik.infrastructure.db.registry import start_mapper
@@ -33,11 +33,6 @@ TEST_CONFIG: dict[str, dict[str, str | int]] = {
     },
     "database_config": {
         "DATABASE_URL": "postgresql+asyncpg://postgres:admin_password@127.0.0.1:5432/postgres",
-    },
-    "admin_config": {
-        "ADMIN_FULLNAME": "admin",
-        "ADMIN_PASSWORD": "Ddz180905",
-        "ADMIN_EMAIL": "admin@example.com",
     }
 }
 
@@ -85,7 +80,6 @@ async def test_engine(test_config: Config) -> AsyncGenerator[AsyncEngine]:
     thread = Thread(target=run_migrations)
     thread.start()
     thread.join()
-    await create_admin_profile(test_config)
 
     yield engine
 

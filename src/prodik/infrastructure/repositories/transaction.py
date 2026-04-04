@@ -42,11 +42,11 @@ class TransactionRepositoryImpl(TransactionRepository):
     ) -> list[Transaction]:
         conditions = []
         if filters.target_id is not None:
-            conditions.append(Transaction.user_id == filters.target_id)
+            conditions.append(Transaction.user_id == filters.target_id)  # type: ignore
         if filters.status is not None:
-            conditions.append(Transaction.status == filters.status)
+            conditions.append(Transaction.status == filters.status)  # type: ignore
         if filters.is_fraud is not None:
-            conditions.append(Transaction.is_fraud == filters.is_fraud)
+            conditions.append(Transaction.is_fraud == filters.is_fraud)  # type: ignore
         if filters.from_date is not None:
             conditions.append(
                 Transaction.timestamp >= filters.from_date.isoformat()  # type: ignore

@@ -17,14 +17,7 @@ class SecretConfig(BaseModel):
     expires_in_seconds: int = Field(alias="EXPIRES_IN_SECONDS")
 
 
-class AdminConfig(BaseModel):
-    fullname: str = Field(alias="ADMIN_FULLNAME")
-    password: str = Field(alias="ADMIN_PASSWORD")
-    email: str = Field(alias="ADMIN_EMAIL")
-
-
 class Config(BaseModel):
-    admin_config: AdminConfig = Field(default_factory=lambda: AdminConfig(**environ))
     api_config: APIConfig = Field(default_factory=lambda: APIConfig(**environ))
     secret_config: SecretConfig = Field(default_factory=lambda: SecretConfig(**environ))
     database_config: DatabaseConfig = Field(

@@ -3,16 +3,17 @@ from faker import Faker
 from httpx import AsyncClient
 from dirty_equals import IsPartialDict, IsStr
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import update
 
-from tests.service.factories import create_antifraud_rule
-from prodik.infrastructure.config import Config
+from tests.service.factories import create_antifraud_rule, UserWithCredentials
+from prodik.domain.user import Role, User
 
 @pytest.mark.asyncio
 async def test_get_all_fraud_rules_ok(
     faker: Faker,
-    test_config: Config,
     test_client: AsyncClient,
     test_session: AsyncSession,
+    test_user_with_credentials: UserWithCredentials,
 ) -> None:
     fraud_rules = [
         await create_antifraud_rule(
@@ -20,10 +21,14 @@ async def test_get_all_fraud_rules_ok(
             faker,
         ) for _ in range(20)
     ]
-
+    await test_session.execute(
+        update(User).values(
+            role=Role.ADMIN,
+        )
+    )
     auth_response = await test_client.post("/api/v1/auth/login", json={
-        "email": test_config.admin_config.email,
-        "password": test_config.admin_config.password,
+        "email": test_user_with_credentials.user.email,
+        "password": test_user_with_credentials.password,
     })
 
     auth_content = auth_response.json()
