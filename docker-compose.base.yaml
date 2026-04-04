@@ -50,11 +50,27 @@ services:
     networks:
       - prodik-network
 
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    volumes:
+      - ./deploy/blackbox.yml:/etc/blackbox_exporter/config.yml
+    networks:
+      - prodik-network
+
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    volumes:
+      - ./deploy/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+    networks:
+      - prodik-network
+
   nginx:
     image: nginx:latest
     container_name: nginx
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     ports:
       - 80:80
     networks:

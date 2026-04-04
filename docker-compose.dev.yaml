@@ -5,6 +5,11 @@ services:
       service: api
     volumes:
       - "./src/prodik/:/prodik/src/prodik/"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:$API_PORT/ping || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   prometheus:
     extends:

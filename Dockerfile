@@ -28,6 +28,7 @@ RUN uv sync --all-extras && uv pip install -e .
 
 FROM python-base AS runner
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/
 COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
 COPY --from=builder $APP_PATH/src $APP_PATH/src
 COPY --from=builder $APP_PATH/pyproject.toml $APP_PATH/pyproject.toml
