@@ -64,7 +64,7 @@ services:
 
   api:
     container_name: api
-    command: ["prodik", "run", "api"]
+    command: ["prodik", "api", "run"]
     extends:
       service: code
     depends_on:

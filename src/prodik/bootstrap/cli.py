@@ -1,5 +1,6 @@
 import contextlib
 import sys
+import argparse
 from collections.abc import Callable, Iterator
 from importlib.resources import as_file, files
 from pathlib import Path
@@ -10,8 +11,6 @@ import alembic.config
 import prodik.infrastructure.db
 from prodik.bootstrap.api import run_http
 from prodik.infrastructure.db import start_mapper
-
-MIN_ARGS_COUNT: Final[int] = 3
 
 
 def get_alembic_config_path() -> Iterator[Path]:
@@ -40,31 +39,39 @@ def autogenerate_migrations(*args: str) -> None:
     with contextlib.suppress(StopIteration):
         next(alembic_path_gen)
 
+def configure_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="Anti-Frodik",
+        description="Anti-frod application",
+    )
+
+    subparsers = parser.add_subparsers(dest="module", required=True)
+
+    api_parser = subparsers.add_parser("api", help="API service")
+    api_sub = api_parser.add_subparsers(dest="option", required=True)
+
+    api_run = api_sub.add_parser("run", help="Run API")
+    api_run.set_defaults(func=run_http)
+
+    mig_parser = subparsers.add_parser("migrations", help="Database migrations")
+    mig_sub = mig_parser.add_subparsers(dest="option", required=True)
+
+    mig_upgrade = mig_sub.add_parser("upgrade", help="Apply migrations")
+    mig_upgrade.set_defaults(func=run_migrations)
+
+    mig_generate = mig_sub.add_parser("generate", help="Generate migration")
+    mig_generate.add_argument("message", type=str)
+    mig_generate.set_defaults(func=lambda args: autogenerate_migrations(args.message))
+
+    return parser
 
 def main() -> None:
-    modules: Final[dict[str, dict[str, Callable[..., None]]]] = {
-        "run": {"api": run_http},
-        "migrations": {"generate": autogenerate_migrations, "upgrade": run_migrations},
-    }
+    parser = configure_argument_parser()
+    args = parser.parse_args()
 
-    if len(sys.argv) < MIN_ARGS_COUNT:
-        print("Usage: crudik <module> <option> [args...]")
-        sys.exit(1)
-
-    module, option, *args = sys.argv[1:]
-
-    if module not in modules:
-        print(f"Error: unknown module '{module}'")
-        print("Available modules:", ", ".join(modules.keys()))
-        sys.exit(1)
-
-    if option not in modules[module]:
-        print(f"Error: unknown option '{option}' for module '{module}'")
-        print("Available options:", ", ".join(modules[module].keys()))
-        sys.exit(1)
-
-    if option == "api":
+    if args.module == "api":
         run_migrations()
 
     start_mapper()
-    modules[module][option](args)
+
+    args.func(args)
