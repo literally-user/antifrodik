@@ -30,6 +30,7 @@ from prodik.presentation.users import router as users_router
 
 logger = structlog.get_logger()
 
+
 class ExceptionMeta(TypedDict):
     status: int
     exception: str

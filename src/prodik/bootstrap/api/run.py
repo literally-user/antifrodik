@@ -36,7 +36,6 @@ def create_app() -> FastAPI:
     include_middlewares(app)
     include_exception_handlers(app)
 
-
     app.add_middleware(
         CORSMiddleware,
         allow_credentials=True,

@@ -17,6 +17,7 @@ from prodik.infrastructure.config import SecretConfig
 
 logger = structlog.get_logger()
 
+
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RegisterUserRequestDTO:
     email: str
