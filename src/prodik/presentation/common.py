@@ -1,10 +1,14 @@
+from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from typing import Final, TypedDict
 from uuid import uuid4
 
+import structlog
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
+from starlette.middleware.base import BaseHTTPMiddleware
+from structlog.contextvars import bind_contextvars, clear_contextvars, get_contextvars
 
 from prodik.application.errors import (
     ApplicationError,
@@ -24,6 +28,7 @@ from prodik.presentation.root import router as root_router
 from prodik.presentation.transactions import router as transactions_router
 from prodik.presentation.users import router as users_router
 
+logger = structlog.get_logger()
 
 class ExceptionMeta(TypedDict):
     status: int
@@ -36,11 +41,13 @@ class BaseExceptionBody(TypedDict):
     path: str
 
 
-def base_exception_body(path: str) -> BaseExceptionBody:
+def base_exception_body() -> BaseExceptionBody:
+    ctx = get_contextvars()
+
     return BaseExceptionBody(
-        trace_id=str(uuid4()),
+        trace_id=str(ctx.get("trace_id")),
         timestamp=datetime.now(tz=UTC).isoformat(),
-        path=path,
+        path=str(ctx.get("path")),
     )
 
 
@@ -85,7 +92,7 @@ EXCEPTION_HANDLERS: Final[dict[type[ApplicationError], ExceptionMeta]] = {
 
 
 async def validation_error_handler(
-    request: Request, exc: RequestValidationError
+    _request: Request, exc: RequestValidationError
 ) -> JSONResponse:
     field_errors = []
     for error in exc.errors():
@@ -100,7 +107,7 @@ async def validation_error_handler(
         )
 
     response = {
-        **base_exception_body(request.url.path),
+        **base_exception_body(),
         "code": "VALIDATION_FAILED",
         "message": "Some fields do not pass validation",
         "field_errors": field_errors,
@@ -112,7 +119,7 @@ async def validation_error_handler(
 
 
 async def application_error_handler(
-    request: Request, exc: ApplicationError
+    _request: Request, exc: ApplicationError
 ) -> JSONResponse:
     exception = EXCEPTION_HANDLERS.get(
         type(exc),
@@ -121,14 +128,30 @@ async def application_error_handler(
         ),
     )
     response = {
-        **base_exception_body(request.url.path),
+        **base_exception_body(),
         "code": exception["exception"],
         "message": str(exc),
     }
     if exc.details is not None:
         response.update({"details": exc.details})
 
+    logger.warning(str(exc))
     return JSONResponse(status_code=exception["status"], content=response)
+
+
+class LoggingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(
+        self,
+        request: Request,
+        call_next: Callable[[Request], Awaitable[Response]],
+    ) -> Response:
+        bind_contextvars(trace_id=str(uuid4()))
+        bind_contextvars(path=request.url.path)
+
+        response = await call_next(request)
+
+        clear_contextvars()
+        return response
 
 
 def include_handlers(app: FastAPI) -> None:
@@ -139,6 +162,10 @@ def include_handlers(app: FastAPI) -> None:
     app.include_router(
         transactions_router, tags=["transactions"], prefix="/api/v1/transactions"
     )
+
+
+def include_middlewares(app: FastAPI) -> None:
+    app.add_middleware(LoggingMiddleware)
 
 
 def include_exception_handlers(app: FastAPI) -> None:

@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from uuid import uuid4
 
+import structlog
+
 from prodik.application.errors import UserAlreadyExistsError
 from prodik.application.interfaces.password_hasher import PasswordHasher
 from prodik.application.interfaces.repositories import (
@@ -13,6 +15,7 @@ from prodik.application.interfaces.uow import UoW
 from prodik.domain.user import Gender, MaritalStatus, Role, User, UserCredentials
 from prodik.infrastructure.config import SecretConfig
 
+logger = structlog.get_logger()
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class RegisterUserRequestDTO:
