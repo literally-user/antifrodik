@@ -1,10 +1,8 @@
 import contextlib
-import sys
 import argparse
-from collections.abc import Callable, Iterator
+from collections.abc import Iterator
 from importlib.resources import as_file, files
 from pathlib import Path
-from typing import Final
 
 import alembic.config
 
