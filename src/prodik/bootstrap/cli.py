@@ -1,5 +1,5 @@
-import contextlib
 import argparse
+import contextlib
 from collections.abc import Iterator
 from importlib.resources import as_file, files
 from pathlib import Path
@@ -37,6 +37,7 @@ def autogenerate_migrations(*args: str) -> None:
     with contextlib.suppress(StopIteration):
         next(alembic_path_gen)
 
+
 def configure_argument_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="Anti-Frodik",
@@ -62,6 +63,7 @@ def configure_argument_parser() -> argparse.ArgumentParser:
     mig_generate.set_defaults(func=lambda args: autogenerate_migrations(args.message))
 
     return parser
+
 
 def main() -> None:
     parser = configure_argument_parser()
